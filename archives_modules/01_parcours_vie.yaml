@@ -1,0 +1,519 @@
+# PARTIE 1 – Parcours de vie et réserve cognitive
+# Types : nombre, texte_court, texte_libre, oui_non, choix_unique, choix_multiple, case_a_cocher,
+#         section (titre), info (texte explicatif).
+# si: {question: ID, egal: VALEUR}  -> affiche la question seulement si la réponse à ID vaut VALEUR
+# si: {question: ID, rempli: true}  -> affiche la question seulement si ID a été renseignée
+# Pas de bloc "scoring" : la règle de calcul de la réserve cognitive n'est pas définie dans le document.
+id: parcours_vie
+titre: Partie 1 – Parcours de vie et réserve cognitive
+introduction: '*Les questions suivantes portent sur votre parcours scolaire, professionnel et vos activités au cours de la vie. Lorsque vous ne connaissez pas une réponse exacte, une estimation suffit.*
+
+
+  *Appuyez sur Entrée après avoir tapé une réponse écrite : les questions qui en dépendent apparaissent alors.*'
+questions:
+- id: titre_0
+  texte: Études et formation
+  type: section
+- id: r1_annees_etudes
+  texte: R1. Combien d’années d’études avez-vous suivies au total ?
+  type: nombre
+  min: 0
+  max: 40
+- id: r2_diplome
+  texte: R2. Quel est le diplôme le plus élevé que vous avez obtenu ?
+  type: choix_unique
+  options:
+  - Aucun diplôme
+  - Brevet / certificat d’études
+  - CAP / BEP
+  - Baccalauréat
+  - Bac +2
+  - Bac +3
+  - Bac +5
+  - Doctorat
+  - Autre
+- id: r2_autre
+  texte: Précisez votre diplôme
+  type: texte_court
+  si:
+    question: r2_diplome
+    egal: Autre
+- id: r3_formation
+  texte: R3. Après vos études initiales, avez-vous suivi une ou plusieurs formations d’une durée d’au moins 6 mois ?
+  type: oui_non
+- id: r3_quoi
+  texte: Quelle(s) formation(s) ?
+  type: texte_court
+  si:
+    question: r3_formation
+    egal: Oui
+- id: r3_duree
+  texte: Durée approximative
+  type: texte_court
+  si:
+    question: r3_formation
+    egal: Oui
+- id: titre_7
+  texte: Parcours professionnel
+  type: section
+- id: info_8
+  texte: "**R4. Quelles sont les principales professions que vous avez exercées au cours de votre vie ?**  \n*Renseignez une profession par ligne ; les lignes suivantes apparaissent au fur et à mesure. Si vous n’avez jamais exercé de profession, laissez vide.*"
+  type: info
+- id: r4_prof1
+  texte: Profession 1
+  type: texte_court
+  obligatoire: false
+- id: r4_prof1_debut
+  texte: 'Profession 1 : âge de début'
+  type: nombre
+  min: 0
+  max: 110
+  si:
+    question: r4_prof1
+    rempli: true
+- id: r4_prof1_fin
+  texte: 'Profession 1 : âge de fin (laissez vide si vous l’exercez encore)'
+  type: nombre
+  min: 0
+  max: 110
+  obligatoire: false
+  si:
+    question: r4_prof1
+    rempli: true
+- id: r4_prof2
+  texte: Profession 2
+  type: texte_court
+  obligatoire: false
+  si:
+    question: r4_prof1
+    rempli: true
+- id: r4_prof2_debut
+  texte: 'Profession 2 : âge de début'
+  type: nombre
+  min: 0
+  max: 110
+  si:
+    question: r4_prof2
+    rempli: true
+- id: r4_prof2_fin
+  texte: 'Profession 2 : âge de fin (laissez vide si vous l’exercez encore)'
+  type: nombre
+  min: 0
+  max: 110
+  obligatoire: false
+  si:
+    question: r4_prof2
+    rempli: true
+- id: r4_prof3
+  texte: Profession 3
+  type: texte_court
+  obligatoire: false
+  si:
+    question: r4_prof2
+    rempli: true
+- id: r4_prof3_debut
+  texte: 'Profession 3 : âge de début'
+  type: nombre
+  min: 0
+  max: 110
+  si:
+    question: r4_prof3
+    rempli: true
+- id: r4_prof3_fin
+  texte: 'Profession 3 : âge de fin (laissez vide si vous l’exercez encore)'
+  type: nombre
+  min: 0
+  max: 110
+  obligatoire: false
+  si:
+    question: r4_prof3
+    rempli: true
+- id: r4_prof4
+  texte: Profession 4
+  type: texte_court
+  obligatoire: false
+  si:
+    question: r4_prof3
+    rempli: true
+- id: r4_prof4_debut
+  texte: 'Profession 4 : âge de début'
+  type: nombre
+  min: 0
+  max: 110
+  si:
+    question: r4_prof4
+    rempli: true
+- id: r4_prof4_fin
+  texte: 'Profession 4 : âge de fin (laissez vide si vous l’exercez encore)'
+  type: nombre
+  min: 0
+  max: 110
+  obligatoire: false
+  si:
+    question: r4_prof4
+    rempli: true
+- id: r5_encadrement
+  texte: R5. Parmi les professions que vous avez exercées, certaines impliquaient-elles d’encadrer, de superviser ou de diriger d’autres personnes ?
+  type: oui_non
+- id: r5_profession
+  texte: Profession concernée
+  type: texte_court
+  si:
+    question: r5_encadrement
+    egal: Oui
+- id: r5_nombre
+  texte: Nombre approximatif de personnes encadrées
+  type: nombre
+  min: 0
+  max: 100000
+  si:
+    question: r5_encadrement
+    egal: Oui
+- id: r5_duree
+  texte: Durée approximative de cette responsabilité (en années)
+  type: nombre
+  min: 0
+  max: 70
+  si:
+    question: r5_encadrement
+    egal: Oui
+- id: titre_25
+  texte: Activités cognitives et culturelles au cours de la vie
+  type: section
+- id: info_26
+  texte: '**R6. À quelle fréquence lisiez-vous des livres, journaux ou magazines ?**'
+  type: info
+- id: r6_lecture_18_30
+  texte: Entre 18 et 30 ans
+  type: choix_unique
+  options: &id001
+  - 0 – Jamais
+  - 1 – Rarement
+  - 2 – Quelques fois par an
+  - 3 – Quelques fois par mois
+  - 4 – Quelques fois par semaine
+  - 5 – Tous les jours ou presque
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  horizontal: true
+- id: r6_lecture_30_65
+  texte: Entre 30 et 65 ans
+  type: choix_unique
+  options: *id001
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  horizontal: true
+- id: r6_lecture_65_plus
+  texte: À partir de 65 ans / actuellement
+  type: choix_unique
+  options: *id001
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  horizontal: true
+- id: info_30
+  texte: "**R7. À quelle fréquence pratiquiez-vous des jeux sollicitant la réflexion ?  \n*Exemples : mots croisés, sudoku, jeux de stratégie, jeux de cartes complexes, puzzles…***"
+  type: info
+- id: r7_jeux_18_30
+  texte: Entre 18 et 30 ans
+  type: choix_unique
+  options: *id001
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  horizontal: true
+- id: r7_jeux_30_65
+  texte: Entre 30 et 65 ans
+  type: choix_unique
+  options: *id001
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  horizontal: true
+- id: r7_jeux_65_plus
+  texte: À partir de 65 ans / actuellement
+  type: choix_unique
+  options: *id001
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  horizontal: true
+- id: info_34
+  texte: "**R8. À quelle fréquence participiez-vous à des activités culturelles ?  \n*Exemples : musée, théâtre, exposition, conférence, concert…***"
+  type: info
+- id: r8_culture_18_30
+  texte: Entre 18 et 30 ans
+  type: choix_unique
+  options: *id001
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  horizontal: true
+- id: r8_culture_30_65
+  texte: Entre 30 et 65 ans
+  type: choix_unique
+  options: *id001
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  horizontal: true
+- id: r8_culture_65_plus
+  texte: À partir de 65 ans / actuellement
+  type: choix_unique
+  options: *id001
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  horizontal: true
+- id: info_38
+  texte: "**R9. À quelle fréquence avez-vous cherché à apprendre de nouvelles connaissances ou compétences en dehors de vos études et de votre activité professionnelle ?  \n*Exemples : cours du soir, informatique, langue, histoire, sciences, bricolage complexe, apprentissage autodidacte…***"
+  type: info
+- id: r9_apprentissage_18_30
+  texte: Entre 18 et 30 ans
+  type: choix_unique
+  options: *id001
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  horizontal: true
+- id: r9_apprentissage_30_65
+  texte: Entre 30 et 65 ans
+  type: choix_unique
+  options: *id001
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  horizontal: true
+- id: r9_apprentissage_65_plus
+  texte: À partir de 65 ans / actuellement
+  type: choix_unique
+  options: *id001
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  horizontal: true
+- id: r10_association
+  texte: R10. Au cours de votre vie, avez-vous participé régulièrement à une association, un club, un groupe organisé ou une activité bénévole ?
+  type: oui_non
+- id: r10_type
+  texte: Type d’activité
+  type: texte_court
+  si: &id002
+    question: r10_association
+    egal: Oui
+- id: r10_debut
+  texte: Âge approximatif de début (ans)
+  type: nombre
+  min: 0
+  max: 110
+  si: *id002
+- id: r10_fin
+  texte: Âge approximatif de fin (ans) (laissez vide si toujours pratiquée)
+  type: nombre
+  min: 0
+  max: 110
+  obligatoire: false
+  si: *id002
+- id: r10_encore
+  texte: Activité toujours pratiquée actuellement
+  type: case_a_cocher
+  obligatoire: false
+  si: *id002
+- id: r10_frequence
+  texte: Fréquence habituelle
+  type: choix_unique
+  options: &id007
+  - Moins d’une fois par mois
+  - Quelques fois par mois
+  - Une fois par semaine
+  - Plusieurs fois par semaine
+  - Tous les jours ou presque
+  si: *id002
+- id: r11_langue
+  texte: R11. En dehors du français, avez-vous appris ou utilisé une autre langue ?
+  type: oui_non
+- id: r11_l1_nom
+  texte: Langue 1
+  type: texte_court
+  obligatoire: true
+  si:
+    question: r11_langue
+    egal: Oui
+- id: r11_l1_age
+  texte: 'Langue 1 : âge approximatif d’apprentissage (ans)'
+  type: nombre
+  min: 0
+  max: 110
+  si: &id003
+    question: r11_l1_nom
+    rempli: true
+- id: r11_l1_annees
+  texte: 'Langue 1 : pendant combien d’années l’avez-vous utilisée ?'
+  type: nombre
+  min: 0
+  max: 110
+  si: *id003
+- id: r11_l1_freq
+  texte: 'Langue 1 : à quelle fréquence l’utilisez-vous actuellement ?'
+  type: choix_unique
+  options: &id005
+  - Jamais
+  - Rarement
+  - Quelques fois par mois
+  - Quelques fois par semaine
+  - Tous les jours ou presque
+  si: *id003
+- id: r11_l2_nom
+  texte: 'Langue 2 (facultatif : laissez vide s’il n’y en a pas)'
+  type: texte_court
+  obligatoire: false
+  si:
+    question: r11_langue
+    egal: Oui
+- id: r11_l2_age
+  texte: 'Langue 2 : âge approximatif d’apprentissage (ans)'
+  type: nombre
+  min: 0
+  max: 110
+  si: &id004
+    question: r11_l2_nom
+    rempli: true
+- id: r11_l2_annees
+  texte: 'Langue 2 : pendant combien d’années l’avez-vous utilisée ?'
+  type: nombre
+  min: 0
+  max: 110
+  si: *id004
+- id: r11_l2_freq
+  texte: 'Langue 2 : à quelle fréquence l’utilisez-vous actuellement ?'
+  type: choix_unique
+  options: *id005
+  si: *id004
+- id: r12_musique
+  texte: R12. Avez-vous pratiqué régulièrement un instrument de musique ou le chant au cours de votre vie ?
+  type: oui_non
+- id: r12_musique_activite
+  texte: Activité (instrument, chant…)
+  type: texte_court
+  si: &id006
+    question: r12_musique
+    egal: Oui
+- id: r12_musique_debut
+  texte: Âge de début
+  type: nombre
+  min: 0
+  max: 110
+  si: *id006
+- id: r12_musique_arret
+  texte: Âge d’arrêt éventuel
+  type: nombre
+  min: 0
+  max: 110
+  obligatoire: false
+  si: *id006
+- id: r12_musique_encore
+  texte: Je pratique encore actuellement
+  type: case_a_cocher
+  obligatoire: false
+  si: *id006
+- id: r12_musique_freq_max
+  texte: Pendant la période où vous pratiquiez le plus régulièrement, à quelle fréquence ?
+  type: choix_unique
+  options: *id007
+  si: *id006
+- id: r12_musique_freq_actuelle
+  texte: Si vous pratiquez encore actuellement, à quelle fréquence ?
+  type: choix_unique
+  options: *id007
+  si:
+    question: r12_musique_encore
+    egal: true
+- id: r13_art
+  texte: "R13. Avez-vous pratiqué régulièrement une activité artistique ou créative autre que la musique ?  \n*Exemples : dessin, peinture, écriture, photographie, théâtre, sculpture, artisanat créatif…*"
+  type: oui_non
+- id: r13_art_activite
+  texte: Activité
+  type: texte_court
+  si: &id008
+    question: r13_art
+    egal: Oui
+- id: r13_art_debut
+  texte: Âge de début
+  type: nombre
+  min: 0
+  max: 110
+  si: *id008
+- id: r13_art_arret
+  texte: Âge d’arrêt éventuel
+  type: nombre
+  min: 0
+  max: 110
+  obligatoire: false
+  si: *id008
+- id: r13_art_encore
+  texte: Je pratique encore actuellement
+  type: case_a_cocher
+  obligatoire: false
+  si: *id008
+- id: r13_art_freq_max
+  texte: Pendant la période où vous pratiquiez le plus régulièrement, à quelle fréquence ?
+  type: choix_unique
+  options: *id007
+  si: *id008
+- id: r13_art_freq_actuelle
+  texte: Si vous pratiquez encore actuellement, à quelle fréquence ?
+  type: choix_unique
+  options: *id007
+  si:
+    question: r13_art_encore
+    egal: true

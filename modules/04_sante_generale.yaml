@@ -1,0 +1,228 @@
+# MODULE 4 – SANTÉ GÉNÉRALE ET ANTÉCÉDENTS MÉDICAUX   (questionnaire RC-EA-EH, version du 27/10/2026)
+# Données SENSIBLES (santé, VIH) : le rapport patient n'en reprend qu'une partie (voir report.py) ; tout est dans l'export.
+# exclusives: réponses à choisir seules (sans autre case cochée). Conditions : voir la liste en tête du module 1.
+id: sante_generale
+titre: Module 4 – Santé générale et antécédents médicaux
+introduction: 'Les questions suivantes portent sur certains problèmes de santé ou traitements que vous avez pu connaître au cours de votre vie.
+
+
+  *Appuyez sur Entrée après avoir tapé une réponse écrite : les questions qui en dépendent apparaissent alors.*'
+questions:
+- id: titre_0
+  texte: Santé cardio-métabolique
+  type: section
+- id: info_1
+  texte: "**SANT1. Un professionnel de santé vous a-t-il déjà diagnostiqué l’un des problèmes suivants ?**  \n*Cochez toutes les réponses concernées.*"
+  type: info
+- id: sant1_diagnostics
+  type: choix_multiple
+  texte: Diagnostics
+  options:
+  - Hypertension artérielle
+  - Diabète
+  - Cholestérol LDL élevé
+  - Autre dyslipidémie / triglycérides élevés
+  - Maladie cardiovasculaire
+  - Aucun de ces problèmes
+  - Je ne sais pas
+  exclusives:
+  - Aucun de ces problèmes
+  - Je ne sais pas
+- id: sant1_ttt_hta
+  type: choix_unique
+  texte: Prenez-vous actuellement un traitement pour ce problème ? (Hypertension artérielle)
+  options: &id001
+  - Non
+  - Oui
+  - Je ne sais pas
+  horizontal: true
+  si:
+    question: sant1_diagnostics
+    contient: Hypertension artérielle
+- id: sant1_ttt_diabete
+  type: choix_unique
+  texte: Prenez-vous actuellement un traitement pour ce problème ? (Diabète)
+  options: *id001
+  horizontal: true
+  si:
+    question: sant1_diagnostics
+    contient: Diabète
+- id: sant1_ttt_ldl
+  type: choix_unique
+  texte: Prenez-vous actuellement un traitement pour ce problème ? (Cholestérol LDL élevé)
+  options: *id001
+  horizontal: true
+  si:
+    question: sant1_diagnostics
+    contient: Cholestérol LDL élevé
+- id: sant1_ttt_dyslipidemie
+  type: choix_unique
+  texte: Prenez-vous actuellement un traitement pour ce problème ? (Autre dyslipidémie / triglycérides élevés)
+  options: *id001
+  horizontal: true
+  si:
+    question: sant1_diagnostics
+    contient: Autre dyslipidémie / triglycérides élevés
+- id: sant1_ttt_cardiovasculaire
+  type: choix_unique
+  texte: Prenez-vous actuellement un traitement pour ce problème ? (Maladie cardiovasculaire)
+  options: *id001
+  horizontal: true
+  si:
+    question: sant1_diagnostics
+    contient: Maladie cardiovasculaire
+- id: sant2_taille_cm
+  type: nombre
+  min: 100
+  max: 230
+  texte: SANT2. Taille (en cm)
+- id: sant3_poids_kg
+  type: nombre
+  min: 20
+  max: 300
+  pas: 0.1
+  texte: SANT3. Poids actuel (en kg)
+- id: titre_10
+  texte: Vision et audition
+  type: section
+- id: sant4_audition
+  type: choix_unique
+  options: *id001
+  horizontal: true
+  texte: SANT4. Avez-vous actuellement des difficultés importantes d’audition, malgré une éventuelle correction ?
+- id: sant4_appareil
+  type: choix_unique
+  options:
+  - Non
+  - Oui
+  horizontal: true
+  texte: Utilisez-vous actuellement un appareil auditif ?
+  si:
+    question: sant4_audition
+    egal: Oui
+- id: sant5_vision
+  type: choix_unique
+  options: *id001
+  horizontal: true
+  texte: SANT5. Avez-vous actuellement des difficultés importantes de vision, malgré une éventuelle correction (lunettes, lentilles, chirurgie, etc.) ?
+- id: titre_14
+  texte: Antécédents neurologiques et vasculaires
+  type: section
+- id: sant6_avc
+  type: choix_unique
+  options: *id001
+  horizontal: true
+  texte: SANT6. Un professionnel de santé vous a-t-il déjà diagnostiqué un accident vasculaire cérébral (AVC) ?
+- id: sant6_nb
+  type: nombre
+  min: 1
+  max: 50
+  texte: Nombre approximatif d’AVC
+  si:
+    question: sant6_avc
+    egal: Oui
+- id: sant6_age
+  type: nombre
+  min: 0
+  max: 110
+  texte: Âge approximatif lors du premier AVC (ans)
+  si:
+    question: sant6_avc
+    egal: Oui
+- id: sant7_tcc
+  type: choix_unique
+  options: *id001
+  horizontal: true
+  texte: SANT7. Au cours de votre vie, avez-vous subi un ou plusieurs traumatismes crâniens importants ?
+- id: sant7_nb
+  type: nombre
+  min: 1
+  max: 100
+  texte: Nombre approximatif de traumatismes crâniens
+  si: &id002
+    question: sant7_tcc
+    egal: Oui
+- id: sant7_perte_connaissance
+  type: choix_unique
+  options: *id001
+  horizontal: true
+  texte: Avez-vous perdu connaissance lors d’au moins l’un de ces traumatismes ?
+  si: *id002
+- id: sant7_hospitalisation
+  type: choix_unique
+  options: *id001
+  horizontal: true
+  texte: Avez-vous été hospitalisé(e) à la suite d’au moins l’un de ces traumatismes ?
+  si: *id002
+- id: sant7_age_periode
+  type: texte_court
+  texte: 'Âge ou période approximative lors du ou des traumatismes (ex. : 42 ans, ou « dans l’enfance »)'
+  si: *id002
+- id: sant8_neuro
+  type: choix_unique
+  options: *id001
+  horizontal: true
+  texte: SANT8. Un professionnel de santé vous a-t-il déjà diagnostiqué une autre maladie neurologique ?
+- id: sant8_precision
+  type: texte_court
+  texte: Précisez
+  si:
+    question: sant8_neuro
+    egal: Oui
+- id: titre_25
+  texte: VIH
+  type: section
+- id: sant9_vih
+  type: choix_unique
+  options:
+  - Non
+  - Oui
+  - Je ne sais pas
+  - Je préfère ne pas répondre
+  texte: SANT9. Un professionnel de santé vous a-t-il déjà diagnostiqué une infection par le VIH ?
+- id: sant9_arv
+  type: choix_unique
+  options:
+  - Non
+  - Oui
+  - Je ne sais pas / préfère ne pas répondre
+  horizontal: true
+  texte: Recevez-vous actuellement un traitement antirétroviral ?
+  si:
+    question: sant9_vih
+    egal: Oui
+- id: titre_28
+  texte: Traitement hormonal de la ménopause
+  type: section
+- id: sant10_thm
+  type: choix_unique
+  options:
+  - Non
+  - Oui, actuellement
+  - Oui, par le passé
+  - Je ne sais pas
+  - Non concernée
+  texte: 'SANT10. Si vous êtes concernée par la ménopause : avez-vous déjà utilisé un traitement hormonal de la ménopause ?'
+- id: sant10_age_debut
+  type: nombre
+  min: 0
+  max: 110
+  texte: Âge approximatif au début du traitement (ans)
+  si: &id003
+    question: sant10_thm
+    egal:
+    - Oui, actuellement
+    - Oui, par le passé
+- id: sant10_duree_annees
+  type: nombre
+  min: 0
+  max: 60
+  texte: 'Durée approximative du traitement : années'
+  si: *id003
+- id: sant10_duree_mois
+  type: nombre
+  min: 0
+  max: 11
+  obligatoire: false
+  texte: et mois
+  si: *id003

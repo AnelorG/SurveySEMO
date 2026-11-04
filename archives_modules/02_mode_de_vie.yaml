@@ -1,0 +1,330 @@
+# PARTIE 2 – Mode de vie
+# Conditions : si: {question: ID, egal: VALEUR | [VALEURS]}  /  {question: ID, rempli: true}  /  {question: ID, sup: 0}
+# Pas de bloc "scoring" : aucune règle de calcul n'est définie dans le document.
+id: mode_de_vie
+titre: Partie 2 – Mode de vie
+introduction: '*Appuyez sur Entrée après avoir tapé une réponse écrite : les questions qui en dépendent apparaissent alors.*'
+questions:
+- id: titre_0
+  texte: Activité physique
+  type: section
+- id: info_1
+  texte: Nous nous intéressons aux différents types d’activités physiques que vous faites dans votre vie quotidienne. Les questions suivantes portent sur le temps que vous avez passé à être actif physiquement au cours des **7 derniers jours**. Répondez à chacune de ces questions même si vous ne vous considérez pas comme une personne active. Les questions concernent les activités physiques que vous faites au travail, dans votre maison ou votre jardin, pour vos déplacements, et pendant votre temps libre.
+  type: info
+- id: info_2
+  texte: '*Pensez à toutes les activités **intenses** que vous avez faites au cours des **7 derniers jours**. Les activités physiques intenses font référence aux activités qui vous demandent un effort physique important et vous font respirer beaucoup plus difficilement que normalement. Pensez seulement aux activités que vous avez effectuées pendant au moins **10 minutes d’affilée**.*'
+  type: info
+- id: mv1_jours_intense
+  texte: MV1. Au cours des 7 derniers jours, combien y a-t-il eu de jours au cours desquels vous avez fait des activités physiques intenses comme porter des charges lourdes, bêcher, faire du VTT ou jouer au football ? (jours par semaine ; indiquez 0 si aucune activité intense)
+  type: nombre
+  min: 0
+  max: 7
+- id: info_4
+  texte: '**MV2. Au total, combien de temps avez-vous passé à faire des activités intenses au cours des 7 derniers jours ?**'
+  type: info
+- id: mv2_intense_nsp
+  texte: Je ne sais pas
+  type: case_a_cocher
+  obligatoire: false
+  si:
+    question: mv1_jours_intense
+    sup: 0
+- id: mv2_intense_heures
+  texte: Heure(s) par jour
+  type: nombre
+  min: 0
+  max: 24
+  si: &id001
+    question: mv2_intense_nsp
+    egal: false
+- id: mv2_intense_minutes
+  texte: Minute(s) par jour
+  type: nombre
+  min: 0
+  max: 59
+  si: *id001
+- id: info_8
+  texte: '*Pensez à toutes les activités **modérées** que vous avez faites au cours des **7 derniers jours**. Les activités physiques modérées font référence aux activités qui vous demandent un effort physique modéré et vous font respirer un peu plus difficilement que normalement. Pensez seulement aux activités que vous avez effectuées pendant au moins **10 minutes d’affilée**.*'
+  type: info
+- id: mv3_jours_modere
+  texte: MV3. Au cours des 7 derniers jours, combien y a-t-il eu de jours au cours desquels vous avez fait des activités physiques modérées comme porter des charges légères, passer l’aspirateur, faire du vélo tranquillement, ou jouer au volley-ball ? Ne pas inclure la marche. (jours par semaine ; indiquez 0 si aucune)
+  type: nombre
+  min: 0
+  max: 7
+- id: info_10
+  texte: '**MV4. Au total, combien de temps avez-vous passé à faire des activités modérées au cours des 7 derniers jours ?**'
+  type: info
+- id: mv4_modere_nsp
+  texte: Je ne sais pas
+  type: case_a_cocher
+  obligatoire: false
+  si:
+    question: mv3_jours_modere
+    sup: 0
+- id: mv4_modere_heures
+  texte: Heure(s) par jour
+  type: nombre
+  min: 0
+  max: 24
+  si: &id002
+    question: mv4_modere_nsp
+    egal: false
+- id: mv4_modere_minutes
+  texte: Minute(s) par jour
+  type: nombre
+  min: 0
+  max: 59
+  si: *id002
+- id: info_14
+  texte: '*Pensez au temps que vous avez passé à **marcher** au cours des **7 derniers jours**. Cela comprend la marche au travail et à la maison, la marche pour vous rendre d’un lieu à un autre, et tout autre type de marche que vous auriez pu faire pendant votre temps libre pour la détente, le sport ou les loisirs.*'
+  type: info
+- id: mv5_jours_marche
+  texte: MV5. Au cours des 7 derniers jours, combien y a-t-il eu de jours au cours desquels vous avez marché pendant au moins 10 minutes d’affilée ? (jours par semaine ; indiquez 0 si vous n’avez pas fait de marche)
+  type: nombre
+  min: 0
+  max: 7
+- id: info_16
+  texte: '**MV6. Au total, combien de temps avez-vous passé à marcher au cours des 7 derniers jours ?**'
+  type: info
+- id: mv6_marche_nsp
+  texte: Je ne sais pas
+  type: case_a_cocher
+  obligatoire: false
+  si:
+    question: mv5_jours_marche
+    sup: 0
+- id: mv6_marche_heures
+  texte: Heure(s) par jour
+  type: nombre
+  min: 0
+  max: 24
+  si: &id003
+    question: mv6_marche_nsp
+    egal: false
+- id: mv6_marche_minutes
+  texte: Minute(s) par jour
+  type: nombre
+  min: 0
+  max: 59
+  si: *id003
+- id: info_20
+  texte: '**MV7. Au cours des 7 derniers jours, combien de temps avez-vous passé assis pendant un jour de semaine ?**'
+  type: info
+- id: mv7_assis_nsp
+  texte: Je ne sais pas
+  type: case_a_cocher
+  obligatoire: false
+- id: mv7_assis_heures
+  texte: Heure(s) par jour
+  type: nombre
+  min: 0
+  max: 24
+  si: &id004
+    question: mv7_assis_nsp
+    egal: false
+- id: mv7_assis_minutes
+  texte: Minute(s) par jour
+  type: nombre
+  min: 0
+  max: 59
+  si: *id004
+- id: mv8_sport
+  texte: MV8. Au cours de votre vie adulte, avez-vous pratiqué régulièrement une activité physique ou sportive pendant au moins 1 an ?
+  type: oui_non
+- id: mv8_activite
+  texte: Activité principale
+  type: texte_court
+  si: &id005
+    question: mv8_sport
+    egal: Oui
+- id: mv8_debut
+  texte: Âge approximatif de début (ans)
+  type: nombre
+  min: 0
+  max: 110
+  si: *id005
+- id: mv8_fin
+  texte: Âge approximatif de fin (ans) (laissez vide si vous pratiquez encore)
+  type: nombre
+  min: 0
+  max: 110
+  obligatoire: false
+  si: *id005
+- id: mv8_encore
+  texte: Je pratique encore actuellement
+  type: case_a_cocher
+  obligatoire: false
+  si: *id005
+- id: mv8_frequence
+  texte: Fréquence habituelle pendant la période de pratique
+  type: choix_unique
+  options:
+  - Moins d’une fois par semaine
+  - 1 fois par semaine
+  - 2 à 3 fois par semaine
+  - 4 fois par semaine ou plus
+  si: *id005
+- id: titre_30
+  texte: Sommeil
+  type: section
+- id: mv9_qualite_sommeil
+  texte: MV9. Comment évaluez-vous globalement la qualité de votre sommeil ?
+  type: choix_unique
+  options:
+  - Très bonne
+  - Bonne
+  - Mauvaise
+  - Très mauvaise
+- id: mv10_heures_sommeil
+  texte: MV10. Combien d’heures dormez-vous en moyenne par nuit ?
+  type: nombre
+  min: 0
+  max: 24
+  pas: 0.5
+- id: mv11_difficultes
+  texte: MV11. Avez-vous des difficultés à vous endormir ou des réveils nocturnes au moins trois nuits par semaine ?
+  type: oui_non
+- id: mv12_somnolence
+  texte: MV12. À quelle fréquence ressentez-vous une somnolence ou une fatigue gênante pendant la journée ?
+  type: choix_unique
+  options:
+  - Jamais
+  - Parfois
+  - Souvent
+  - Presque toujours
+- id: titre_35
+  texte: Alimentation
+  type: section
+- id: info_36
+  texte: "**MV13. En moyenne, combien de portions de fruits et légumes consommez-vous par jour ?**  \n*Une portion correspond par exemple à un fruit moyen, une compote sans sucre ajouté ou une petite poignée de fruits coupés.*"
+  type: info
+- id: mv13_fruits_legumes
+  texte: Votre réponse
+  type: choix_unique
+  options:
+  - 0 à 1 portion par jour
+  - 2 à 3 portions par jour
+  - 4 portions par jour
+  - 5 portions ou plus par jour
+- id: info_38
+  texte: "**MV14. À quelle fréquence consommez-vous des légumineuses ou des fruits à coque non salés ?**  \n*Exemples : lentilles, pois chiches, haricots secs, pois cassés, noix, amandes, noisettes, pistaches…*"
+  type: info
+- id: mv14_legumineuses
+  texte: Votre réponse
+  type: choix_unique
+  options: &id006
+  - Rarement ou jamais
+  - Moins d’1 fois par semaine
+  - 1 à 2 fois par semaine
+  - 3 fois par semaine ou plus
+- id: mv15_poisson
+  texte: MV15. À quelle fréquence consommez-vous du poisson ?
+  type: choix_unique
+  options:
+  - Rarement ou jamais
+  - Moins d’1 fois par semaine
+  - 1 fois par semaine
+  - 2 fois par semaine ou plus
+- id: mv16_matiere_grasse
+  texte: MV16. Quelle matière grasse utilisez-vous le plus souvent pour cuisiner ou assaisonner vos aliments ?
+  type: choix_unique
+  options:
+  - Principalement des huiles végétales riches en graisses insaturées (par exemple huile d’olive, de colza, de noix…)
+  - Principalement une autre huile végétale (par exemple huile de tournesol)
+  - Cela varie beaucoup / aucune matière grasse principale
+  - Principalement du beurre, de la crème ou une autre matière grasse animale
+- id: info_42
+  texte: "**MV17. À quelle fréquence consommez-vous de la viande rouge ou de la charcuterie ?**  \n*Exemples : bœuf, porc, agneau, saucisson, jambon, pâté…*"
+  type: info
+- id: mv17_viande_rouge
+  texte: Votre réponse
+  type: choix_unique
+  options: *id006
+- id: info_44
+  texte: "**MV18. À quelle fréquence consommez-vous des aliments ou boissons très sucrés, des plats préparés industriels ou d’autres produits ultratransformés ?**  \n*Exemples : sodas, confiseries, biscuits, pâtisseries, desserts très sucrés, snacks salés, plats préparés, produits panés industriels, nouilles instantanées, produits de restauration rapide…*"
+  type: info
+- id: mv18_ultratransformes
+  texte: Votre réponse
+  type: choix_unique
+  options: *id006
+- id: titre_46
+  texte: Tabac et alcool
+  type: section
+- id: mv19_tabac
+  texte: MV19. Avez-vous déjà fumé régulièrement du tabac au cours de votre vie ?
+  type: choix_unique
+  options:
+  - Non
+  - Oui, je fume actuellement
+  - Oui, mais j’ai arrêté
+- id: mv19_debut
+  texte: Âge approximatif de début (ans)
+  type: nombre
+  min: 0
+  max: 110
+  si: &id007
+    question: mv19_tabac
+    egal:
+    - Oui, je fume actuellement
+    - Oui, mais j’ai arrêté
+- id: mv19_arret
+  texte: Âge approximatif d’arrêt (ans)
+  type: nombre
+  min: 0
+  max: 110
+  si:
+    question: mv19_tabac
+    egal: Oui, mais j’ai arrêté
+- id: mv19_cigarettes
+  texte: Nombre moyen de cigarettes fumées par jour pendant la période de consommation
+  type: choix_unique
+  options:
+  - Moins de 5
+  - 5 à 10
+  - 11 à 20
+  - Plus de 20
+  si: *id007
+- id: mv20_alcool_freq
+  texte: MV20. À quelle fréquence consommez-vous actuellement des boissons alcoolisées ?
+  type: choix_unique
+  options:
+  - Jamais
+  - Moins d’1 fois par semaine
+  - 1 fois par semaine
+  - 2 à 3 fois par semaine
+  - 4 fois par semaine ou plus
+- id: mv21_verres
+  texte: MV21. Lors d’une journée où vous consommez de l’alcool, combien de verres standards buvez-vous habituellement ?
+  type: choix_unique
+  options:
+  - 1 verre
+  - 2 verres
+  - 3 à 4 verres
+  - 5 verres ou plus
+  si:
+    question: mv20_alcool_freq
+    egal:
+    - Moins d’1 fois par semaine
+    - 1 fois par semaine
+    - 2 à 3 fois par semaine
+    - 4 fois par semaine ou plus
+- id: mv22_alcool_passe
+  texte: MV22. Au cours de votre vie adulte, avez-vous connu une période d’au moins 1 an pendant laquelle votre consommation d’alcool était plus importante qu’actuellement ?
+  type: oui_non
+- id: mv22_duree
+  texte: Durée approximative de cette période (en années)
+  type: nombre
+  min: 0
+  max: 80
+  si: &id008
+    question: mv22_alcool_passe
+    egal: Oui
+- id: mv22_conso
+  texte: Consommation habituelle pendant cette période
+  type: choix_unique
+  options:
+  - Moins d’1 verre par jour
+  - 1 à 2 verres par jour
+  - 3 à 4 verres par jour
+  - 5 verres par jour ou plus
+  si: *id008

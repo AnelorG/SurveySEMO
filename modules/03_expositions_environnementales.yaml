@@ -1,0 +1,323 @@
+# MODULE 3 – EXPOSITIONS ENVIRONNEMENTALES ET PROFESSIONNELLES   (questionnaire RC-EA-EH, version du 27/10/2026)
+# Fréquence : `scores:` = conversion en jours d'exposition par mois (0,5 ; 2 ; 8 ; 20 ; 30). Indices (durée en mois x jours/mois) : cotations.py.
+# Les indices sont EXPLORATOIRES : ils ne représentent pas une dose réelle.
+id: expositions_environnementales
+titre: Module 3 – Expositions environnementales et professionnelles
+introduction: '*Appuyez sur Entrée après avoir tapé une réponse écrite : les questions qui en dépendent apparaissent alors.*'
+questions:
+- id: titre_0
+  texte: ENV1 – Expositions chimiques et professionnelles
+  type: section
+- id: info_1
+  texte: "**ENV1. Au cours de votre vie, avez-vous été exposé(e), de manière régulière ou répétée, à l’une des substances ou situations suivantes, dans le cadre professionnel ou personnel ?**  \n*Pour chaque exposition, indiquez si vous avez été exposé(e), la durée approximative de cette exposition et sa fréquence habituelle.*"
+  type: info
+- id: env1_solvants
+  type: choix_unique
+  texte: '**Solvants, peintures, vernis, colles ou produits de nettoyage professionnels**'
+  options: &id002
+  - Non
+  - Oui
+  - Je ne sais pas
+  horizontal: true
+- id: env1_solvants_annees
+  type: nombre
+  min: 0
+  max: 110
+  texte: 'Durée approximative totale : années'
+  si: &id001
+    question: env1_solvants
+    egal: Oui
+- id: env1_solvants_mois
+  type: nombre
+  min: 0
+  max: 11
+  obligatoire: false
+  texte: et mois
+  si: *id001
+- id: env1_solvants_freq
+  type: choix_unique
+  texte: Fréquence habituelle pendant cette période
+  options: &id004
+  - Moins d’une fois par mois
+  - 1 à 3 jours par mois
+  - 1 à 3 jours par semaine
+  - 4 à 6 jours par semaine
+  - Tous les jours ou presque
+  scores: &id005
+  - 0.5
+  - 2
+  - 8
+  - 20
+  - 30
+  si: *id001
+- id: env1_pesticides
+  type: choix_unique
+  texte: '**Pesticides, herbicides, insecticides ou autres produits phytosanitaires**'
+  options: *id002
+  horizontal: true
+- id: env1_pesticides_annees
+  type: nombre
+  min: 0
+  max: 110
+  texte: 'Durée approximative totale : années'
+  si: &id003
+    question: env1_pesticides
+    egal: Oui
+- id: env1_pesticides_mois
+  type: nombre
+  min: 0
+  max: 11
+  obligatoire: false
+  texte: et mois
+  si: *id003
+- id: env1_pesticides_freq
+  type: choix_unique
+  texte: Fréquence habituelle pendant cette période
+  options: *id004
+  scores: *id005
+  si: *id003
+- id: env1_fumees
+  type: choix_unique
+  texte: '**Fumées, poussières, gaz ou particules dans le cadre professionnel ou d’activités régulières**'
+  options: *id002
+  horizontal: true
+- id: env1_fumees_annees
+  type: nombre
+  min: 0
+  max: 110
+  texte: 'Durée approximative totale : années'
+  si: &id006
+    question: env1_fumees
+    egal: Oui
+- id: env1_fumees_mois
+  type: nombre
+  min: 0
+  max: 11
+  obligatoire: false
+  texte: et mois
+  si: *id006
+- id: env1_fumees_freq
+  type: choix_unique
+  texte: Fréquence habituelle pendant cette période
+  options: *id004
+  scores: *id005
+  si: *id006
+- id: env1_autre
+  type: choix_unique
+  texte: '**Autre exposition régulière à des produits chimiques ou substances potentiellement nocives**'
+  options: *id002
+  horizontal: true
+- id: env1_autre_precision
+  type: texte_court
+  texte: Précisez
+  si: &id007
+    question: env1_autre
+    egal: Oui
+- id: env1_autre_annees
+  type: nombre
+  min: 0
+  max: 110
+  texte: 'Durée approximative totale : années'
+  si: *id007
+- id: env1_autre_mois
+  type: nombre
+  min: 0
+  max: 11
+  obligatoire: false
+  texte: et mois
+  si: *id007
+- id: env1_autre_freq
+  type: choix_unique
+  texte: Fréquence habituelle pendant cette période
+  options: *id004
+  scores: *id005
+  si: *id007
+- id: titre_19
+  texte: ENV2 – Environnement extérieur
+  type: section
+- id: info_20
+  texte: '**ENV2. Au cours de votre vie, avez-vous vécu pendant au moins un an à proximité immédiate de l’un des environnements suivants ?**'
+  type: info
+- id: env2_route
+  type: choix_unique
+  texte: '**Route à forte circulation**'
+  options: *id002
+  horizontal: true
+- id: env2_route_annees
+  type: nombre
+  min: 1
+  max: 110
+  texte: 'Durée approximative totale : années'
+  si:
+    question: env2_route
+    egal: Oui
+- id: env2_autoroute
+  type: choix_unique
+  texte: '**Autoroute ou voie rapide**'
+  options: *id002
+  horizontal: true
+- id: env2_autoroute_annees
+  type: nombre
+  min: 1
+  max: 110
+  texte: 'Durée approximative totale : années'
+  si:
+    question: env2_autoroute
+    egal: Oui
+- id: env2_zone_industrielle
+  type: choix_unique
+  texte: '**Zone industrielle**'
+  options: *id002
+  horizontal: true
+- id: env2_zone_industrielle_annees
+  type: nombre
+  min: 1
+  max: 110
+  texte: 'Durée approximative totale : années'
+  si:
+    question: env2_zone_industrielle
+    egal: Oui
+- id: env2_usine
+  type: choix_unique
+  texte: '**Usine, site industriel ou installation générant régulièrement des fumées, poussières ou émissions**'
+  options: *id002
+  horizontal: true
+- id: env2_usine_annees
+  type: nombre
+  min: 1
+  max: 110
+  texte: 'Durée approximative totale : années'
+  si:
+    question: env2_usine
+    egal: Oui
+- id: env2_autre
+  type: choix_unique
+  texte: '**Autre source importante et durable de pollution extérieure**'
+  options: *id002
+  horizontal: true
+- id: env2_autre_precision
+  type: texte_court
+  texte: Précisez
+  si: &id008
+    question: env2_autre
+    egal: Oui
+- id: env2_autre_annees
+  type: nombre
+  min: 1
+  max: 110
+  texte: 'Durée approximative totale : années'
+  si: *id008
+- id: titre_32
+  texte: ENV3 – Environnement intérieur
+  type: section
+- id: info_33
+  texte: '**ENV3. Au cours de votre vie adulte, avez-vous été régulièrement exposé(e), à votre domicile ou dans un autre lieu de vie, à l’une des situations suivantes ?**'
+  type: info
+- id: env3_tabac_passif
+  type: choix_unique
+  texte: '**Fumée de tabac provenant d’autres personnes**'
+  options: *id002
+  horizontal: true
+- id: env3_tabac_passif_annees
+  type: nombre
+  min: 0
+  max: 110
+  texte: 'Durée approximative totale : années'
+  si: &id009
+    question: env3_tabac_passif
+    egal: Oui
+- id: env3_tabac_passif_mois
+  type: nombre
+  min: 0
+  max: 11
+  obligatoire: false
+  texte: et mois
+  si: *id009
+- id: env3_tabac_passif_freq
+  type: choix_unique
+  texte: Fréquence habituelle pendant cette période
+  options: *id004
+  scores: *id005
+  si: *id009
+- id: env3_humidite
+  type: choix_unique
+  texte: '**Humidité importante, moisissures ou logement régulièrement mal ventilé**'
+  options: *id002
+  horizontal: true
+- id: env3_humidite_annees
+  type: nombre
+  min: 0
+  max: 110
+  texte: 'Durée approximative totale : années'
+  si: &id010
+    question: env3_humidite
+    egal: Oui
+- id: env3_humidite_mois
+  type: nombre
+  min: 0
+  max: 11
+  obligatoire: false
+  texte: et mois
+  si: *id010
+- id: env3_humidite_freq
+  type: choix_unique
+  texte: Fréquence habituelle pendant cette période
+  options: *id004
+  scores: *id005
+  si: *id010
+- id: env3_combustion
+  type: choix_unique
+  texte: '**Utilisation régulière d’un chauffage ou d’un appareil à combustion pouvant produire des fumées à l’intérieur du logement (par exemple : poêle à bois, cheminée, chauffage au pétrole ou au gaz)**'
+  options: *id002
+  horizontal: true
+- id: env3_combustion_annees
+  type: nombre
+  min: 0
+  max: 110
+  texte: 'Durée approximative totale : années'
+  si: &id011
+    question: env3_combustion
+    egal: Oui
+- id: env3_combustion_mois
+  type: nombre
+  min: 0
+  max: 11
+  obligatoire: false
+  texte: et mois
+  si: *id011
+- id: env3_combustion_freq
+  type: choix_unique
+  texte: Fréquence habituelle pendant cette période
+  options: *id004
+  scores: *id005
+  si: *id011
+- id: env3_autre
+  type: choix_unique
+  texte: '**Autre exposition intérieure régulière que vous jugez importante**'
+  options: *id002
+  horizontal: true
+- id: env3_autre_precision
+  type: texte_court
+  texte: Précisez
+  si: &id012
+    question: env3_autre
+    egal: Oui
+- id: env3_autre_annees
+  type: nombre
+  min: 0
+  max: 110
+  texte: 'Durée approximative totale : années'
+  si: *id012
+- id: env3_autre_mois
+  type: nombre
+  min: 0
+  max: 11
+  obligatoire: false
+  texte: et mois
+  si: *id012
+- id: env3_autre_freq
+  type: choix_unique
+  texte: Fréquence habituelle pendant cette période
+  options: *id004
+  scores: *id005
+  si: *id012

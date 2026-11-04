@@ -1,0 +1,257 @@
+# MODULE 2 – EXPOSOME PSYCHOSOCIAL   (questionnaire RC-EA-EH, version du 27/10/2026)
+# Réseau social (LSNS-6, Lubben 2006) · Symptômes dépressifs (HAD-D) · Antécédents dépressifs.
+# Cotations : codes 0-5 (LSNS-6) et 0-3 (HAD-D) dans `scores:` ; sous-scores et totaux dans cotations.py.
+id: exposome_psychosocial
+titre: Module 2 – Exposome psychosocial
+introduction: '*Appuyez sur Entrée après avoir tapé une réponse écrite : les questions qui en dépendent apparaissent alors.*'
+questions:
+- id: titre_0
+  texte: Réseau social
+  type: section
+- id: info_1
+  texte: '*Famille : en pensant aux membres de votre famille (ex. : enfants, conjoint, frères et sœurs, etc.)…*'
+  type: info
+- id: psy1_famille_contact
+  type: choix_unique
+  texte: PSY1. À combien de membres de votre famille parlez-vous ou voyez-vous au moins une fois par mois ?
+  options: &id001
+  - Aucun
+  - 1 personne
+  - 2 personnes
+  - 3 à 4 personnes
+  - 5 à 8 personnes
+  - 9 personnes ou plus
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  horizontal: true
+- id: psy2_famille_confidences
+  type: choix_unique
+  texte: PSY2. À combien de membres de votre famille seriez-vous à l’aise de parler de problèmes personnels ?
+  options: *id001
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  horizontal: true
+- id: psy3_famille_aide
+  type: choix_unique
+  texte: PSY3. De combien de membres de votre famille vous sentez-vous suffisamment proche pour leur demander de l’aide en cas de problème ?
+  options: *id001
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  horizontal: true
+- id: info_5
+  texte: '*Amitiés : en pensant à l’ensemble de vos amis…*'
+  type: info
+- id: psy4_amis_contact
+  type: choix_unique
+  texte: PSY4. À combien de vos amis parlez-vous ou voyez-vous au moins une fois par mois ?
+  options: *id001
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  horizontal: true
+- id: psy5_amis_confidences
+  type: choix_unique
+  texte: PSY5. Avec combien de vos amis vous sentez-vous suffisamment à l’aise pour parler de problèmes personnels ?
+  options: *id001
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  horizontal: true
+- id: psy6_amis_aide
+  type: choix_unique
+  texte: PSY6. De combien de vos amis vous sentez-vous suffisamment proche pour pouvoir leur demander de l’aide en cas de problème ?
+  options: *id001
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  horizontal: true
+- id: titre_9
+  texte: Symptômes dépressifs actuels
+  type: section
+- id: info_10
+  texte: '*Pour les questions suivantes, choisissez la réponse qui correspond le mieux à ce que vous ressentez actuellement.*'
+  type: info
+- id: psy7_plaisir
+  type: choix_unique
+  texte: PSY7. Je prends plaisir aux mêmes choses qu’autrefois
+  options:
+  - Oui, tout autant
+  - Pas autant
+  - Un peu seulement
+  - Presque plus
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+- id: psy8_rire
+  type: choix_unique
+  texte: PSY8. Je ris facilement et vois le bon côté des choses
+  options:
+  - Autant que par le passé
+  - Plus autant qu’avant
+  - Vraiment moins qu’avant
+  - Plus du tout
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+- id: psy9_humeur
+  type: choix_unique
+  texte: PSY9. Je suis de bonne humeur
+  options:
+  - La plupart du temps
+  - Assez souvent
+  - Rarement
+  - Jamais
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+- id: psy10_ralenti
+  type: choix_unique
+  texte: PSY10. J’ai l’impression de fonctionner au ralenti
+  options:
+  - Jamais
+  - Parfois
+  - Très souvent
+  - Presque toujours
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+- id: psy11_apparence
+  type: choix_unique
+  texte: PSY11. Je ne m’intéresse plus à mon apparence
+  options:
+  - J’y prête autant d’attention que par le passé
+  - Il se peut que je n’y fasse plus autant attention
+  - Je n’y accorde pas autant d’attention que je devrais
+  - Plus du tout
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+- id: psy12_se_rejouir
+  type: choix_unique
+  texte: PSY12. Je me réjouis d’avance à l’idée de faire certaines choses
+  options:
+  - Autant qu’avant
+  - Un peu moins qu’avant
+  - Bien moins qu’avant
+  - Presque jamais
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+- id: psy13_livre
+  type: choix_unique
+  texte: PSY13. Je peux prendre plaisir à un bon livre ou à une bonne émission de radio ou de télévision
+  options:
+  - Souvent
+  - Parfois
+  - Rarement
+  - Très rarement
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+- id: titre_18
+  texte: Antécédents dépressifs au cours de la vie
+  type: section
+- id: psy14_depression
+  type: choix_unique
+  texte: PSY14. Au cours de votre vie, un professionnel de santé vous a-t-il déjà diagnostiqué une dépression ou un épisode dépressif ?
+  options:
+  - Non
+  - Oui
+  - Je ne sais pas
+- id: psy14_age_nsp
+  type: case_a_cocher
+  obligatoire: false
+  texte: 'Âge lors du premier épisode : je ne sais pas'
+  si: &id002
+    question: psy14_depression
+    egal: Oui
+- id: psy14_age
+  type: nombre
+  min: 0
+  max: 110
+  texte: Âge approximatif lors du premier épisode (ans)
+  si:
+    question: psy14_age_nsp
+    egal: false
+- id: psy14_plusieurs
+  type: choix_unique
+  texte: Avez-vous connu plusieurs épisodes dépressifs au cours de votre vie ?
+  options:
+  - Non
+  - Oui
+  - Je ne sais pas
+  horizontal: true
+  si: *id002
+- id: psy14_nb_nsp
+  type: case_a_cocher
+  obligatoire: false
+  texte: 'Nombre d’épisodes : je ne sais pas'
+  si:
+    question: psy14_plusieurs
+    egal: Oui
+- id: psy14_nb
+  type: nombre
+  min: 2
+  max: 100
+  texte: Nombre approximatif d’épisodes
+  si:
+    question: psy14_nb_nsp
+    egal: false
+- id: psy14_prise
+  type: choix_unique
+  si: *id002
+  texte: Avez-vous bénéficié d’une prise en charge pour au moins l’un de ces épisodes ?
+  options:
+  - Non
+  - Oui, traitement médicamenteux
+  - Oui, suivi psychologique / psychothérapie
+  - Oui, les deux
+  - Autre
+  - Je ne sais pas
+- id: psy14_prise_autre
+  type: texte_court
+  texte: 'Autre prise en charge : précisez'
+  si:
+    question: psy14_prise
+    egal: Autre

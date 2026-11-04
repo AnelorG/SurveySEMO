@@ -1,0 +1,27 @@
+id: humeur
+titre: "Partie 2 - Humeur"
+introduction: "Au cours des 2 dernières semaines, à quelle fréquence avez-vous été gêné(e) par les problèmes suivants ?"
+questions:
+  - id: humeur_tristesse
+    texte: "Sentiment de tristesse ou de découragement"
+    type: choix_unique
+    options: ["Jamais", "Plusieurs jours", "Plus de la moitié du temps", "Presque tous les jours"]
+    scores: [0, 1, 2, 3]
+
+  - id: humeur_interet
+    texte: "Perte d'intérêt ou de plaisir pour les activités habituelles"
+    type: choix_unique
+    options: ["Jamais", "Plusieurs jours", "Plus de la moitié du temps", "Presque tous les jours"]
+    scores: [0, 1, 2, 3]
+
+  - id: humeur_prenom
+    texte: "Quel mot décrit le mieux votre humeur actuelle ? (un seul mot)"
+    type: texte_court
+    obligatoire: false
+
+scoring:
+  questions: [humeur_tristesse, humeur_interet]
+  interpretation:
+    - {min: 0, max: 1, message: "Vos réponses ne montrent pas de gêne particulière."}
+    - {min: 2, max: 3, message: "Vos réponses montrent une gêne modérée. N'hésitez pas à en discuter avec un professionnel."}
+    - {min: 4, max: 6, message: "Vos réponses montrent une gêne importante. Nous vous conseillons d'en parler à un professionnel de santé."}

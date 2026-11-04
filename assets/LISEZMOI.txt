@@ -1,0 +1,3 @@
+Déposez ici le logo du CHU Grenoble Alpes, avec un nom commençant par "logo"
+(ex. logo_chuga.png, logo_chuga.svg, logo.jpg). Il s'affiche automatiquement en haut des pages.
+Idéal : PNG à fond transparent (ou SVG), hauteur d'au moins 120 px.
