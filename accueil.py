@@ -18,7 +18,7 @@ ETABLISSEMENT = "CHU Grenoble Alpes"
 TITRE = ("ÉTUDE", "SEMO")   # le 2e mot s'affiche en couleur
 SURTITRE = "Questionnaires"
 SOUS_TITRE = "Vous êtes invité(e) à répondre à des questionnaires sur votre mode de vie. A l'issue de la visite complémentaire, votre médecin vous fournira une synthèse claire de votre profil santé."
-PIED_DE_PAGE = "CHU Grenoble Alpes · Vos données sont confidentielles et protégées."
+PIED_DE_PAGE = "Centre Hospitalier Universitaire Grenoble Alpes · Vos données sont confidentielles et protégées."
 AFFICHER_ETAPES = True            # bandeau « comment ça marche » (3 étapes)
 # ====================================================================
 
