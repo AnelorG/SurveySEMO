@@ -1,0 +1,488 @@
+# MODULE 1 – MODE DE VIE   (questionnaire RC-EA-EH, version du 27/10/2026)
+# Cotations (IPAQ, PSQI, MEDAS, paquets-années, alcool) : voir cotations.py.
+# Types : nombre, heure, texte_court, oui_non, choix_unique (avec `scores:` = codes PSQI), case_a_cocher, section, info.
+# Conditions : si: {question: ID, egal: VALEUR | [VALEURS]}  /  {question: ID, rempli: true}  /  {question: ID, sup: 0}
+id: mode_de_vie
+titre: Module 1 – Mode de vie
+introduction: '*Lorsque vous ne connaissez pas une réponse exacte, une estimation suffit. Appuyez sur Entrée après avoir tapé une réponse écrite : les questions qui en dépendent apparaissent alors.*'
+questions:
+- id: titre_0
+  texte: Activité physique (IPAQ)
+  type: section
+- id: info_1
+  texte: Les questions suivantes portent sur le temps que vous avez passé à être **actif physiquement** au cours des **7 derniers jours**.
+  type: info
+- id: mv1_jours_intense
+  type: nombre
+  min: 0
+  max: 7
+  texte: MV1. Au cours des 7 derniers jours, combien y a-t-il eu de jours au cours desquels vous avez fait des activités physiques intenses comme porter des charges lourdes, bêcher, faire du VTT ou jouer au football ? (jours par semaine ; indiquez 0 si aucun)
+- id: info_3
+  texte: '**MV2. Au total, combien de temps avez-vous passé à faire des activités intenses au cours des 7 derniers jours ?**'
+  type: info
+- id: mv2_intense_nsp
+  texte: Je ne sais pas
+  type: case_a_cocher
+  obligatoire: false
+  si:
+    question: mv1_jours_intense
+    sup: 0
+- id: mv2_intense_heures
+  texte: Heure(s) par jour
+  type: nombre
+  min: 0
+  max: 24
+  si: &id001
+    question: mv2_intense_nsp
+    egal: false
+- id: mv2_intense_minutes
+  texte: Minute(s) par jour
+  type: nombre
+  min: 0
+  max: 59
+  si: *id001
+- id: mv3_jours_modere
+  type: nombre
+  min: 0
+  max: 7
+  texte: MV3. Au cours des 7 derniers jours, combien y a-t-il eu de jours au cours desquels vous avez fait des activités physiques modérées comme porter des charges légères, passer l’aspirateur, faire du vélo tranquillement, ou jouer à la pétanque ? Ne pas inclure la marche. (jours par semaine ; indiquez 0 si aucun)
+- id: info_8
+  texte: '**MV4. Au total, combien de temps avez-vous passé à faire des activités modérées au cours des 7 derniers jours ?**'
+  type: info
+- id: mv4_modere_nsp
+  texte: Je ne sais pas
+  type: case_a_cocher
+  obligatoire: false
+  si:
+    question: mv3_jours_modere
+    sup: 0
+- id: mv4_modere_heures
+  texte: Heure(s) par jour
+  type: nombre
+  min: 0
+  max: 24
+  si: &id002
+    question: mv4_modere_nsp
+    egal: false
+- id: mv4_modere_minutes
+  texte: Minute(s) par jour
+  type: nombre
+  min: 0
+  max: 59
+  si: *id002
+- id: mv5_jours_marche
+  type: nombre
+  min: 0
+  max: 7
+  texte: MV5. Au cours des 7 derniers jours, combien y a-t-il eu de jours au cours desquels vous avez marché pendant au moins 10 minutes d’affilée ? (jours par semaine ; indiquez 0 si aucun)
+- id: info_13
+  texte: '**MV6. Au total, combien de temps avez-vous passé à marcher au cours des 7 derniers jours ?**'
+  type: info
+- id: mv6_marche_nsp
+  texte: Je ne sais pas
+  type: case_a_cocher
+  obligatoire: false
+  si:
+    question: mv5_jours_marche
+    sup: 0
+- id: mv6_marche_heures
+  texte: Heure(s) par jour
+  type: nombre
+  min: 0
+  max: 24
+  si: &id003
+    question: mv6_marche_nsp
+    egal: false
+- id: mv6_marche_minutes
+  texte: Minute(s) par jour
+  type: nombre
+  min: 0
+  max: 59
+  si: *id003
+- id: info_17
+  texte: '**MV7. Au cours des 7 derniers jours, combien de temps avez-vous passé assis pendant un jour de semaine ?**'
+  type: info
+- id: mv7_assis_nsp
+  texte: Je ne sais pas
+  type: case_a_cocher
+  obligatoire: false
+- id: mv7_assis_heures
+  texte: Heure(s) par jour
+  type: nombre
+  min: 0
+  max: 24
+  si: &id004
+    question: mv7_assis_nsp
+    egal: false
+- id: mv7_assis_minutes
+  texte: Minute(s) par jour
+  type: nombre
+  min: 0
+  max: 59
+  si: *id004
+- id: titre_21
+  texte: Sommeil (PSQI)
+  type: section
+- id: mv8_coucher
+  type: heure
+  texte: MV8. Au cours du mois dernier, à quelle heure êtes-vous habituellement allé(e) vous coucher le soir (se mettre au lit) ? — Heure habituelle du coucher
+- id: info_23
+  texte: '**MV9. Au cours du mois dernier, combien de temps vous a-t-il fallu (en minutes) pour vous endormir le soir ?**'
+  type: info
+- id: mv9_latence
+  texte: Nombre de minutes
+  type: nombre
+  min: 0
+  max: 600
+  pas: 1
+- id: mv10_lever
+  type: heure
+  texte: MV10. Au cours du mois dernier, à quelle heure vous êtes-vous habituellement levé(e) le matin ? — Heure habituelle du lever
+- id: info_26
+  texte: "**MV11. Au cours du mois dernier, combien d’heures de sommeil effectif avez-vous eu chaque nuit ?**  \n*Ce nombre peut être différent du nombre d’heures que vous avez passées au lit.*"
+  type: info
+- id: mv11_sommeil_h
+  texte: Heures de sommeil par nuit (ex. 6,5 pour 6 h 30)
+  type: nombre
+  min: 0
+  max: 24
+  pas: 0.25
+- id: info_28
+  texte: '*Pour chacune des questions suivantes, indiquez la meilleure réponse.*'
+  type: info
+- id: info_29
+  texte: '**MV12. Au cours du mois dernier, avec quelle fréquence avez-vous eu des troubles du sommeil en lien avec les items suivants :**'
+  type: info
+- id: mv12a
+  type: choix_unique
+  texte: a. Vous n’avez pas pu vous endormir en moins de 30 mn
+  options: &id005
+  - Pas au cours du dernier mois
+  - Moins d’une fois par semaine
+  - Une ou deux fois par semaine
+  - Trois ou quatre fois par semaine
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  horizontal: true
+- id: mv12b
+  type: choix_unique
+  texte: b. Vous vous êtes réveillé(e) au milieu de la nuit ou précocement le matin
+  options: *id005
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  horizontal: true
+- id: mv12c
+  type: choix_unique
+  texte: c. Vous avez dû vous lever pour aller aux toilettes
+  options: *id005
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  horizontal: true
+- id: mv12d
+  type: choix_unique
+  texte: d. Vous n’avez pas pu respirer correctement
+  options: *id005
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  horizontal: true
+- id: mv12e
+  type: choix_unique
+  texte: e. Vous avez toussé ou ronflé bruyamment
+  options: *id005
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  horizontal: true
+- id: mv12f
+  type: choix_unique
+  texte: f. Vous avez eu trop froid
+  options: *id005
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  horizontal: true
+- id: mv12g
+  type: choix_unique
+  texte: g. Vous avez eu trop chaud
+  options: *id005
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  horizontal: true
+- id: mv12h
+  type: choix_unique
+  texte: h. Vous avez eu de mauvais rêves
+  options: *id005
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  horizontal: true
+- id: mv12i
+  type: choix_unique
+  texte: i. Vous avez eu des douleurs
+  options: *id005
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  horizontal: true
+- id: mv12j_description
+  type: texte_court
+  obligatoire: false
+  texte: 'j. Autres raisons : donnez une description (laissez vide s’il n’y en a pas)'
+- id: mv12j_frequence
+  type: choix_unique
+  texte: Indiquez la fréquence des troubles du sommeil pour l’ensemble des autres raisons que vous avez indiquées
+  options: *id005
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  horizontal: true
+  si:
+    question: mv12j_description
+    rempli: true
+- id: mv13_qualite
+  type: choix_unique
+  texte: MV13. Au cours du mois dernier, comment évalueriez-vous globalement la qualité de votre sommeil ?
+  options:
+  - Très bonne
+  - Assez bonne
+  - Assez mauvaise
+  - Très mauvaise
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+- id: mv14_medicaments
+  type: choix_unique
+  texte: MV14. Au cours du mois dernier, combien de fois avez-vous pris des médicaments (prescrits par un médecin ou délivrés sans ordonnance) pour faciliter votre sommeil ?
+  options: *id005
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+- id: mv15_somnolence
+  type: choix_unique
+  texte: MV15. Au cours du mois dernier, combien de fois avez-vous eu des difficultés à demeurer éveillé(e) pendant que vous conduisiez, preniez vos repas, étiez occupé(e) dans une activité sociale ?
+  options: *id005
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+- id: mv16_enthousiasme
+  type: choix_unique
+  texte: MV16. Au cours du mois dernier, à quel degré cela a-t-il représenté un problème pour vous d’avoir assez d’enthousiasme pour faire ce que vous aviez à faire ?
+  options:
+  - Pas du tout un problème
+  - Un tout petit problème
+  - Un certain problème
+  - Un très gros problème
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+- id: mv17_cohabitation
+  type: choix_unique
+  texte: MV17. Avez-vous un conjoint ou un autre camarade de chambre ?
+  options:
+  - Ni l’un, ni l’autre
+  - Oui, mais dans une chambre différente
+  - Oui, dans la même chambre mais pas dans le même lit
+  - Oui, dans le même lit
+- id: titre_46
+  texte: Alimentation (MEDAS)
+  type: section
+- id: mv18_huile_principale
+  type: oui_non
+  texte: MV18. Utilisez-vous l’huile d’olive comme principale source de matière grasse pour cuisiner ?
+- id: info_48
+  texte: "**MV19. Combien de cuillères à soupe d’huile d’olive utilisez-vous chaque jour ?**  \n*Incluez l’huile d’olive utilisée pour les salades, la préparation des repas, les repas consommés à l’extérieur, la friture, etc.*"
+  type: info
+- id: mv19_huile_cuilleres
+  texte: Cuillères à soupe par jour
+  type: nombre
+  min: 0
+  max: 30
+  pas: 0.5
+- id: info_50
+  texte: "**MV20. Combien de portions de légumes consommez-vous par jour ?**  \n*Une portion correspond à environ ½ tasse de légumes crus ou cuits, ou 1 tasse de salade verte crue.*"
+  type: info
+- id: mv20_legumes
+  texte: Portions par jour
+  type: nombre
+  min: 0
+  max: 20
+  pas: 0.5
+- id: info_52
+  texte: "**MV21. Combien de portions de fruits entiers consommez-vous par jour ?**  \n*Une portion correspond à environ ½ tasse de fruits ou un fruit entier de taille moyenne.*"
+  type: info
+- id: mv21_fruits
+  texte: Portions par jour
+  type: nombre
+  min: 0
+  max: 20
+  pas: 0.5
+- id: info_54
+  texte: "**MV22. Combien de portions de viande rouge, de hamburger ou de saucisses consommez-vous par semaine ?**  \n*Une portion correspond à environ 100 à 150 g.*"
+  type: info
+- id: mv22_viande_rouge
+  texte: Portions par semaine
+  type: nombre
+  min: 0
+  max: 50
+  pas: 0.5
+- id: info_56
+  texte: "**MV23. Combien de portions de beurre, de margarine ou de crème consommez-vous par jour ?**  \n*Une portion correspond à 1 cuillère à soupe. Ne pas inclure les margarines molles non hydrogénées.*"
+  type: info
+- id: mv23_beurre
+  texte: Portions par jour
+  type: nombre
+  min: 0
+  max: 20
+  pas: 0.5
+- id: info_58
+  texte: "**MV24. Combien de boissons contenant des sucres ajoutés consommez-vous par jour ?**  \n*Une portion correspond à environ 355 mL, soit approximativement une canette. Cela comprend notamment les sodas sucrés, boissons aux fruits avec sucres ajoutés, boissons pour sportifs, boissons énergisantes et thés glacés sucrés.*"
+  type: info
+- id: mv24_boissons_sucrees
+  texte: Portions par jour
+  type: nombre
+  min: 0
+  max: 20
+  pas: 0.5
+- id: info_60
+  texte: "**MV25. Consommez-vous du vin ? Si oui, quelle quantité consommez-vous par semaine ?**  \n*Un verre correspond à environ 100 mL.*"
+  type: info
+- id: mv25_vin
+  texte: Verres par semaine (0 si aucun)
+  type: nombre
+  min: 0
+  max: 100
+  pas: 0.5
+- id: info_62
+  texte: "**MV26. Combien de portions de légumineuses consommez-vous par semaine ?**  \n*Exemples : haricots rouges, pois chiches, lentilles, haricots noirs, pois cassés. Une portion correspond à environ 150 g, soit environ ½ à ⅔ de tasse.*"
+  type: info
+- id: mv26_legumineuses
+  texte: Portions par semaine
+  type: nombre
+  min: 0
+  max: 50
+  pas: 0.5
+- id: info_64
+  texte: "**MV27. Combien de portions de poisson ou de fruits de mer consommez-vous par semaine ?**  \n*Une portion de poisson correspond à environ 100 à 150 g. Une portion de fruits de mer correspond à environ 200 g ou 4 à 5 pièces, selon le type de fruits de mer.*"
+  type: info
+- id: mv27_poisson
+  texte: Portions par semaine
+  type: nombre
+  min: 0
+  max: 50
+  pas: 0.5
+- id: info_66
+  texte: '**MV28. Combien de fois par semaine consommez-vous des produits de boulangerie ou de pâtisserie tels que des tartes, biscuits, gâteaux ou beignets ?**'
+  type: info
+- id: mv28_patisseries
+  texte: Fois par semaine
+  type: nombre
+  min: 0
+  max: 50
+  pas: 0.5
+- id: info_68
+  texte: "**MV29. Combien de fois par semaine consommez-vous des fruits à coque ?**  \n*Exemples : noix, amandes, noisettes, noix de cajou, pistaches… Une portion correspond à environ 30 g.*"
+  type: info
+- id: mv29_fruits_coque
+  texte: Fois par semaine
+  type: nombre
+  min: 0
+  max: 50
+  pas: 0.5
+- id: mv30_volaille
+  type: oui_non
+  texte: MV30. Consommez-vous plus souvent du poulet ou de la dinde que du bœuf, du porc, des hamburgers ou des saucisses ?
+- id: info_71
+  texte: '**MV31. Combien de fois par semaine consommez-vous des plats préparés avec une sauce à base de tomate, d’ail, d’oignon ou de poireau revenus dans de l’huile d’olive ?**'
+  type: info
+- id: mv31_sofrito
+  texte: Fois par semaine
+  type: nombre
+  min: 0
+  max: 50
+  pas: 0.5
+- id: titre_73
+  texte: Tabac et alcool
+  type: section
+- id: mv32_tabac
+  type: choix_unique
+  texte: MV32. Avez-vous déjà fumé régulièrement du tabac au cours de votre vie ?
+  options:
+  - Non
+  - Oui, je fume actuellement
+  - Oui, mais j’ai arrêté
+- id: mv32_debut
+  type: nombre
+  min: 5
+  max: 110
+  texte: Âge approximatif de début (ans)
+  si: &id006
+    question: mv32_tabac
+    egal:
+    - Oui, je fume actuellement
+    - Oui, mais j’ai arrêté
+- id: mv32_arret
+  type: nombre
+  min: 5
+  max: 110
+  texte: Âge approximatif d’arrêt (ans)
+  si:
+    question: mv32_tabac
+    egal: Oui, mais j’ai arrêté
+- id: mv32_cigarettes
+  type: nombre
+  min: 0
+  max: 200
+  pas: 0.5
+  texte: Nombre moyen de cigarettes fumées par jour pendant la période de consommation
+  si: *id006
+- id: info_78
+  texte: '**MV33. En moyenne, combien de jours par semaine consommez-vous des boissons alcoolisées ?**'
+  type: info
+- id: mv33_jours_alcool
+  texte: Jour(s) par semaine (0 si aucun)
+  type: nombre
+  min: 0
+  max: 7
+  pas: 1
+- id: mv34_verres
+  type: nombre
+  min: 0
+  max: 50
+  pas: 0.5
+  si:
+    question: mv33_jours_alcool
+    sup: 0
+  texte: 'MV34. Lors d’une journée où vous consommez de l’alcool, combien de verres standards buvez-vous habituellement ? (Un verre standard correspond approximativement à : 10 cL de vin à 12°, 25 cL de bière à 5° ou 2,5 cL de spiritueux à 40°)'

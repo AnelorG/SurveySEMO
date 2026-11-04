@@ -1,0 +1,44 @@
+id: sommeil
+titre: "Partie 1 - Sommeil"
+introduction: "Les questions suivantes portent sur votre sommeil du dernier mois."
+questions:
+  - id: sommeil_heures
+    texte: "Combien d'heures dormez-vous en moyenne par nuit ?"
+    type: nombre            # réponse numérique
+    min: 0
+    max: 24
+    pas: 0.5
+
+  - id: sommeil_difficulte
+    texte: "Avez-vous des difficultés d'endormissement ?"
+    type: choix_unique      # QCS (une seule réponse)
+    options: ["Jamais", "Parfois", "Souvent", "Toujours"]
+    scores: [0, 1, 2, 3]
+
+  - id: sommeil_reveils
+    texte: "Vous réveillez-vous la nuit ?"
+    type: choix_unique
+    options: ["Jamais", "Parfois", "Souvent", "Toujours"]
+    scores: [0, 1, 2, 3]
+
+  - id: sommeil_troubles
+    texte: "Quels troubles rencontrez-vous ?"
+    type: choix_multiple    # QCM (plusieurs réponses)
+    options: ["Cauchemars", "Somnolence en journée", "Ronflements", "Jambes sans repos"]
+    obligatoire: false
+
+  - id: sommeil_traitement
+    texte: "Prenez-vous un traitement pour dormir ?"
+    type: oui_non           # question fermée
+
+  - id: sommeil_libre
+    texte: "Souhaitez-vous ajouter un commentaire sur votre sommeil ?"
+    type: texte_libre       # question ouverte
+    obligatoire: false
+
+scoring:
+  questions: [sommeil_difficulte, sommeil_reveils]
+  interpretation:
+    - {min: 0, max: 2, message: "Pas de difficulté de sommeil notable dans vos réponses."}
+    - {min: 3, max: 4, message: "Quelques difficultés de sommeil. Vous pouvez en parler à votre médecin si elles vous gênent."}
+    - {min: 5, max: 6, message: "Difficultés de sommeil marquées. Nous vous conseillons d'en parler à un professionnel de santé."}

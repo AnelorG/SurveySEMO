@@ -1,0 +1,95 @@
+# ======================================================================
+# MODULE D'ACCUEIL, D'INFORMATION ET DE CONSENTEMENT
+# - unique: true      -> la page n'est affichée qu'à la 1re connexion
+# - hors_rapport: true -> elle n'apparaît pas dans le rapport final
+# ======================================================================
+id: consentement
+titre: "Informations sur l'étude SEMO"
+unique: true
+hors_rapport: true
+introduction: |
+  ## Bienvenue !
+
+  Merci de l'intérêt que vous portez à cette étude. 
+  Vous êtes invité(e) à répondre à des questions sur votre vie quotidienne et votre santé. À la fin, vous aurez accès à un rapport de synthèse de vos réponses.
+
+  Avant de commencer, merci de lire attentivement la note d'information ci-dessous. Prenez le temps dont vous avez besoin. Vous pouvez en parler à votre médecin traitant ou à vos proches. Vous pouvez poser toutes vos questions à l'équipe de l'étude.
+
+  ---
+
+  ## Note d'information
+
+  ### 1. Titre de l'étude et responsable
+
+  - **Titre de l'étude :** Évaluation d’un programme enrichi de rééducation de la parole combinant l’orthophonie et l’intégration sensori-motrice chez des patients aphasiques : Visite complémentaire (SEMO/INFO-CO)
+  - **Numéro d'étude / n° ID-RCB :** 2020-A00720-39
+  - **Promoteur (responsable de la recherche) :** CHU Grenoble-Alpes 38RC20.061
+  - **Investigateur coordonnateur :** Pr Monica BACIU Neurologue, Professeur des universités ; CMRR PRENEL Neurologie CHUGA & Laboratoire de Psychologie et NeuroCognition BMD – 1251 Avenue Centrale, CS 40 700 38058 GRENOBLE CEDEX 9
+  - **Contact de l'équipe de recherche :**  monica.baciu@univ-grenoble-alpes.fr
+
+  ### 2. Pourquoi cette visite complémentaire ?
+
+  Vous êtes sollicité car vous avez participé à la recherche SEMO et avez accepté d’être recontacté. Cette étude complémentaire a pour objectif de mieux comprendre les liens entre les différences individuelles liées au parcours de vie en fonction de l’avancée en âge, les performances langagières, les fonctions cognitives et l’organisation des réseaux cérébraux.
+
+  ### 3. En quoi consiste votre participation ?
+
+  Vous répondez en ligne à un questionnaire composé de plusieurs parties. Cela prend environ 20 minutes. Vous pouvez vous arrêter à tout moment et reprendre plus tard avec les mêmes identifiants : vos réponses déjà validées sont conservées. Lors de votre visite au Laboratoire de Psychologie et NeuroCognition, vous compléterez deux autres questionnaires et réaliserez un test de performance appelé LEXTOMM (langage, mémoire et fonctions exécutives).
+
+  ### 4. Bénéfices attendus, risques et contraintes
+
+  - **Bénéfices :** En tant que sujet sain, aucun bénéfice n’est attendu lors de votre participation à cette étude. Celle-ci n’a aucune finalité diagnostique, clinique ou thérapeutique.
+  - **Risques et contraintes :** Les contraintes identifiées sont principalement liées au temps consacré à la visite complémentaire ainsi qu’au déplacement au LPNC (une demi-journée). Une possible fatigue cognitive transitoire liée à la passation des questionnaires et du test de performance pourrait être observée. Une indemnisation des contraintes subies est proposée. 
+
+  ### 5. Votre participation est volontaire
+
+  Vous êtes totalement libre d'accepter ou de refuser de participer. Vous pouvez **retirer votre consentement à tout moment, sans avoir à vous justifier**, et cela n'aura **aucune conséquence sur votre prise en charge ni sur la relation avec votre équipe soignante**. Si vous ne souhaitez pas participer, il vous suffit de fermer cette page.
+
+  ### 6. Cadre réglementaire
+
+  Cette recherche impliquant la personne humaine, de type 2 à risques et contraintes minimes, a reçu l'avis favorable du Comité de protection des personnes (CPP) Nord-Ouest II (20.03.19.41844) et a été autorisée par l’Agence Nationale de Sécurité du Médicament. Le promoteur a souscrit une assurance couvrant sa responsabilité civile.
+
+  ### 7. Protection et confidentialité de vos données
+
+  - **Responsable du traitement :** CHUGA.
+  - **Finalité :** les données recueillies servent uniquement à répondre aux objectifs scientifiques de l'étude décrits ci-dessus.
+  - **Base légale :** Recherche scientifique.
+  - **Quelles données ?:** Vos réponses au questionnaire, associées à votre **numéro de randomisation**. Votre identité (nom, prénom, date de naissance) est conservée **séparément**, dans un fichier à accès restreint réservé à l'équipe de recherche : elle n'est jamais enregistrée avec vos réponses. Votre date de naissance sert aussi à vous identifier à la connexion (elle est alors conservée sous une forme chiffrée irréversible).
+  - **Qui y accède ?:** Uniquement l'équipe de recherche et, le cas échéant, les autorités de santé ou les personnes mandatées pour le contrôle qualité, tenues au secret professionnel. 
+  - **Hébergement :** Les données enregistrées à l’occasion de cette recherche font l’objet d’un traitement informatisé au LPNC et UMS IRMAGE dans le respect de la loi 2018-493 du 20 juin 2018 relative à la protection des données personnelles.
+  - **Durée de conservation :** 15 ans.
+  - **Référentiel CNIL :** méthodologie de référence MR-001.
+  - **Vos droits :** vous disposez d'un droit d'accès, de rectification, de limitation et d'opposition concernant vos données. Pour les exercer, ou pour toute question sur vos données, contactez le délégué à la protection des données (DPO) du CHUGA. Si vous estimez que vos droits ne sont pas respectés, vous pouvez introduire une réclamation auprès de la CNIL (www.cnil.fr).
+
+  ### 8. Résultats de l'étude
+
+  Conformément à la loi n°2002-303 du 4 mars 2002, les participants peuvent être informés, à leur demande, des résultats globaux de la recherche.
+
+  ## Votre consentement
+
+  Cochez chacune des cases ci-dessous pour confirmer votre accord. La date et l'heure de votre consentement sont enregistrées automatiquement.
+questions:
+  - id: consent_information
+    texte: "J'ai lu et compris la note d'information ci-dessus, et j'ai eu le temps de la réflexion nécessaire."
+    type: case_a_cocher
+
+  - id: consent_questions
+    texte: "J'ai pu poser mes questions à l'équipe de l'étude et j'ai obtenu des réponses satisfaisantes."
+    type: case_a_cocher
+
+  - id: consent_volontaire
+    texte: "Je comprends que ma participation est volontaire et que je peux la retirer à tout moment, sans justification et sans conséquence sur ma prise en charge."
+    type: case_a_cocher
+
+  - id: consent_donnees
+    texte: "J'accepte que mes données soient traitées dans les conditions décrites dans la note d'information, et je sais comment exercer mes droits."
+    type: case_a_cocher
+
+  - id: consent_participation
+    texte: "J'accepte librement de participer à cette étude."
+    type: case_a_cocher
+
+  # Exemple de consentement FACULTATIF (à supprimer si non prévu au protocole) :
+  - id: consent_reutilisation
+    texte: "J'accepte que mes données pseudonymisées puissent être réutilisées pour de futures recherches. (facultatif)"
+    type: case_a_cocher
+    obligatoire: false
