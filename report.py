@@ -211,9 +211,10 @@ def rapport_mode_de_vie(r, Q, age, m):
     # ------------------------------------------------ activité physique (IPAQ)
     st.markdown("### 🏃 Activité physique")
     explication("Le questionnaire <b>IPAQ</b> mesure votre activité physique des 7 derniers jours en <b>MET-minutes par semaine</b> : "
-                "on multiplie l’intensité (marche 3,3 · modérée 4 · intense 8) par le nombre de jours et de minutes. "
-                "Repères courants : <b>600</b> MET-min/semaine pour une activité modérée, <b>3 000</b> pour une activité élevée.")
-    total = v["ipaq_total"]
+                "durée × fréquence × intensité (marche = 3 · modérée = 4 · intense = 8). Il vous classe en <b>3 catégories</b> (Craig et al., 2003) : "
+                "faible, modérée ou élevée. On vérifie aussi la recommandation <b>CDC-ACSM</b> : au moins <b>150 minutes par semaine</b> d’activité "
+                "d’intensité au moins modérée (une minute d’activité intense compte double).")
+    total, niveau, equiv = v["ipaq_total"], v["ipaq_niveau"], v["ipaq_minutes_equivalent_modere"]
     if total is not None:
         c1, c2 = st.columns(2)
         top = max(4000.0, total * 1.15)
@@ -222,25 +223,37 @@ def rapport_mode_de_vie(r, Q, age, m):
             gauge=dict(axis=dict(range=[0, top]), bar=dict(color=C["indigo"]),
                        steps=[dict(range=[0, 600], color="rgba(249,115,22,.30)"), dict(range=[600, 3000], color="rgba(16,185,129,.35)"),
                               dict(range=[3000, top], color="rgba(20,184,166,.30)")])))
-        c1.plotly_chart(style(g, 300))
+        c1.plotly_chart(style(g, 280))
         b = go.Figure()
         for nom, cle, col in (("Intense", "ipaq_intense", C["rose"]), ("Modérée", "ipaq_modere", C["amber"]), ("Marche", "ipaq_marche", C["sky"])):
             b.add_trace(go.Bar(x=[nom], y=[v[cle] or 0], marker=dict(color=col, cornerradius=8), text=[f"{fmt(v[cle] or 0)}"],
                                textposition="outside", cliponaxis=False))
-        b.update_layout(showlegend=False, yaxis_title="MET-minutes par semaine", title="Répartition par intensité")
-        c2.plotly_chart(style(b, 300))
-        niveau_col = {"Faible": C["orange"], "Modéré": C["green"], "Élevé": C["teal"]}.get(v["ipaq_niveau"], C["slate"])
+        b.update_layout(showlegend=False, yaxis_title="MET-min / semaine", title="Répartition par intensité")
+        c2.plotly_chart(style(b, 280))
+        top2 = max(300.0, equiv * 1.2)
+        g2 = go.Figure(go.Indicator(
+            mode="number+gauge", value=equiv, number=dict(suffix=" min", valueformat=".0f"),
+            title=dict(text="Minutes d’activité par semaine (intense ×2)"),
+            gauge=dict(shape="bullet", axis=dict(range=[0, top2]), bar=dict(color=C["green"] if equiv >= 150 else C["orange"], thickness=0.5),
+                       steps=[dict(range=[0, 150], color="rgba(249,115,22,.28)"), dict(range=[150, top2], color="rgba(16,185,129,.35)")],
+                       threshold=dict(line=dict(color=C["slate"], width=3), value=150))))
+        st.plotly_chart(style(g2, 150))
+        niveau_col = {"Faible": C["orange"], "Modéré": C["green"], "Élevé": C["teal"]}.get(niveau, C["slate"])
         cs = [carte("Score total IPAQ", f"{fmt(total)}", "MET-min/semaine", C["indigo"], "🏃"),
-              carte("Niveau d’activité (indicatif)", v["ipaq_niveau"] or "—", "protocole IPAQ", niveau_col, "📈")]
+              carte("Catégorie d’activité", niveau or "—", v["ipaq_critere"] or "", niveau_col, "📈"),
+              carte("Recommandation 150 min", "Atteinte" if equiv >= 150 else "Non atteinte", f"{fmt(round(equiv))} min équivalentes/semaine",
+                    C["green"] if equiv >= 150 else C["orange"], "✅" if equiv >= 150 else "🎯")]
         if v["assis_min_jour"] is not None:
-            cs.append(carte("Temps assis", f"{v['assis_min_jour'] / 60:.1f} h / jour", "un jour de semaine · hors total IPAQ", C["slate"], "🪑"))
+            cs.append(carte("Temps assis", f"{v['assis_min_jour'] / 60:.1f} h / jour", "un jour de semaine · hors score IPAQ", C["slate"], "🪑"))
             if v["assis_min_jour"] >= 480:
                 pistes.append("Temps assis élevé : une courte pause active toutes les heures est bénéfique.")
         rangee(cs)
-        (forts if total >= 600 else pistes).append(
-            f"Activité physique : {fmt(total)} MET-min par semaine" + (", au-dessus du repère de 600." if total >= 600 else
-            ". Essayez d’ajouter progressivement de la marche rapide ou du vélo pour atteindre 600."))
-        cartes.append(carte("Activité physique (IPAQ)", f"{fmt(total)}", "MET-min/semaine · repère : 600", C["green"] if total >= 600 else C["orange"], "🏃"))
+        if equiv >= 150:
+            forts.append(f"Activité physique : environ {fmt(round(equiv))} min par semaine, la recommandation de 150 min est atteinte (catégorie « {niveau} »).")
+        else:
+            pistes.append(f"Activité physique : environ {fmt(round(equiv))} min par semaine, sous la recommandation de 150 min. "
+                          "Ajoutez progressivement de la marche rapide ou du vélo.")
+        cartes.append(carte("Activité physique (IPAQ)", f"{fmt(total)}", f"MET-min/sem · catégorie {niveau}", C["green"] if equiv >= 150 else C["orange"], "🏃"))
 
     # ------------------------------------------------ sommeil (PSQI)
     st.markdown("### 😴 Sommeil")

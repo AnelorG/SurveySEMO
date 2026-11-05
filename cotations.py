@@ -41,7 +41,7 @@ def _r(x, n=1):
 
 
 # ---------------------------------------------------------------- IPAQ (activité physique)
-MET = {"intense": 8.0, "modere": 4.0, "marche": 3.3}
+MET = {"intense": 8.0, "modere": 4.0, "marche": 3.0}            # valeurs retenues pour l'étude (vigorous 8 ; moderate 4 ; walk 3)
 DEFAUT_MIN = {"intense": 20, "modere": 20, "marche": 30}      # « Je ne sais pas » : minutes/jour moyennes
 IPAQ_QUESTIONS = {"intense": ("mv1_jours_intense", "mv2_intense"), "modere": ("mv3_jours_modere", "mv4_modere"),
                   "marche": ("mv5_jours_marche", "mv6_marche")}
@@ -60,21 +60,32 @@ def ipaq(rep):
             mins[nom] = _duree_minutes(rep, pref, DEFAUT_MIN[nom])
             mets[nom] = None if mins[nom] is None else MET[nom] * j * mins[nom]
     complet = all(v is not None for v in mets.values())
-    total = sum(mets.values()) if complet else None
-    niveau = None
-    if complet:  # niveaux du protocole IPAQ (forme courte) : repères indicatifs
-        jt = sum(jours.values())
+    total = sum(mets.values()) if complet else None          # MET-min/semaine = durée x fréquence x MET, sommé sur les 3 domaines
+    niveau = critere = None
+    if complet:  # catégories de Craig et al. (2003), protocole IPAQ forme courte
+        jt = sum(jours.values())                              # jours « toutes intensités confondues » (somme des 3 réponses)
         min_ok = all(mins[k] >= 30 for k in ("modere", "marche") if jours[k] > 0)
-        if (jours["intense"] >= 3 and mets["intense"] >= 1500) or (jt >= 7 and total >= 3000):
-            niveau = "Élevé"
-        elif (jours["intense"] >= 3 and mins["intense"] >= 20) or (jours["modere"] + jours["marche"] >= 5 and min_ok) \
-                or (jt >= 5 and total >= 600):
-            niveau = "Modéré"
+        if jours["intense"] >= 3 and total >= 1500:
+            niveau, critere = "Élevé", "A : ≥ 3 jours d’activité intense et ≥ 1 500 MET-min/semaine"
+        elif jt >= 7 and total >= 3000:
+            niveau, critere = "Élevé", "B : 7 jours d’activité (toutes intensités) et ≥ 3 000 MET-min/semaine"
+        elif jours["intense"] >= 3 and mins["intense"] >= 20:
+            niveau, critere = "Modéré", "A : ≥ 3 jours avec au moins 20 min d’activité intense"
+        elif jours["modere"] + jours["marche"] >= 5 and min_ok:
+            niveau, critere = "Modéré", "B : ≥ 5 jours avec au moins 30 min d’activité modérée ou de marche"
+        elif jt >= 5 and total >= 600:
+            niveau, critere = "Modéré", "C : ≥ 5 jours (toutes intensités) et ≥ 600 MET-min/semaine"
         else:
-            niveau = "Faible"
+            niveau, critere = "Faible", "Ne remplit pas les critères des catégories modérée ou élevée"
+    # recommandation CDC-ACSM : ≥ 150 min/semaine d'activité d'intensité au moins modérée, l'activité intense comptant DOUBLE (méthode d'Armstrong)
+    tot_min = {k: (None if mins[k] is None or jours[k] is None else jours[k] * mins[k]) for k in mins}
+    minutes = None if None in tot_min.values() else sum(tot_min.values())
+    equiv = None if minutes is None else tot_min["modere"] + tot_min["marche"] + 2 * tot_min["intense"]
     assis = None if rep.get("mv7_assis_nsp") else _duree_minutes(rep, "mv7_assis")
     return {"ipaq_intense": _r(mets["intense"]), "ipaq_modere": _r(mets["modere"]), "ipaq_marche": _r(mets["marche"]),
-            "ipaq_total": _r(total), "ipaq_niveau": niveau, "assis_min_jour": assis}
+            "ipaq_total": _r(total), "ipaq_niveau": niveau, "ipaq_critere": critere, "ipaq_minutes_semaine": _r(minutes),
+            "ipaq_minutes_equivalent_modere": _r(equiv), "ipaq_recommandation_150": None if equiv is None else int(equiv >= 150),
+            "assis_min_jour": assis}
 
 
 # ---------------------------------------------------------------- PSQI (sommeil)
@@ -307,9 +318,12 @@ def _variables_sante():
 
 # ---------------------------------------------------------------- variables (ordre et libellés pour l'export)
 VARIABLES = {"mode_de_vie": (
-    [("ipaq_intense", "IPAQ – activité intense (MET-min/semaine)"), ("ipaq_modere", "IPAQ – activité modérée (MET-min/semaine)"),
-     ("ipaq_marche", "IPAQ – marche (MET-min/semaine)"), ("ipaq_total", "IPAQ – score total (MET-min/semaine)"),
-     ("ipaq_niveau", "IPAQ – niveau d'activité (indicatif)"), ("assis_min_jour", "Temps assis (minutes/jour, hors total IPAQ)"),
+    [("ipaq_intense", "IPAQ – activité intense (MET-min/semaine, MET = 8)"), ("ipaq_modere", "IPAQ – activité modérée (MET-min/semaine, MET = 4)"),
+     ("ipaq_marche", "IPAQ – marche (MET-min/semaine, MET = 3)"), ("ipaq_total", "IPAQ – score total (MET-min/semaine)"),
+     ("ipaq_niveau", "IPAQ – catégorie d'activité (Craig 2003 : Faible / Modéré / Élevé)"),
+     ("ipaq_critere", "IPAQ – critère de la catégorie atteinte"), ("ipaq_minutes_semaine", "Activité physique totale (minutes/semaine, sans pondération)"),
+     ("ipaq_minutes_equivalent_modere", "Activité physique (minutes/semaine, activité intense comptée x2)"),
+     ("ipaq_recommandation_150", "Recommandation CDC-ACSM atteinte : ≥ 150 min/semaine (0 = non ; 1 = oui)"), ("assis_min_jour", "Temps assis (minutes/jour, hors total IPAQ)"),
      ("psqi_temps_au_lit_h", "PSQI – temps passé au lit (heures)"), ("psqi_efficacite_pct", "PSQI – efficacité habituelle du sommeil (%)"),
      ("psqi_c1", "PSQI C1 – qualité subjective du sommeil (0-3)"), ("psqi_c2", "PSQI C2 – latence d'endormissement (0-3)"),
      ("psqi_c3", "PSQI C3 – durée du sommeil (0-3)"), ("psqi_c4", "PSQI C4 – efficacité habituelle du sommeil (0-3)"),
