@@ -9,6 +9,7 @@ from html import escape
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
+import streamlit.components.v1 as components
 
 import accueil
 import config
@@ -395,15 +396,20 @@ def _dossier(modules, numero):
     rep = db.charger_reponses(numero, passage)
 
     cle = f"rapport_{numero}_{passage}"
-    c1, c2, _ = st.columns([1.3, 1.3, 2], vertical_alignment="center")
-    if c1.button("📄 Préparer le rapport de synthèse", key="med_prep"):
+    c1, c2, _ = st.columns([1.4, 1, 3], vertical_alignment="center")
+    if c1.button("📄 Générer le rapport de synthèse", key="med_prep", type="primary"):
         with st.spinner("Génération du rapport…"):
             st.session_state[cle] = rendu_html.generer(
                 modules, rep, age=_age(l["naissance"]),
                 entete=f"Participant {numero} · groupe {l['groupe']} · {suivi.ordinal(passage)} passage")
     if cle in st.session_state:
-        c2.download_button("⬇️ Télécharger (HTML)", st.session_state[cle], file_name=f"synthese_{numero}_passage{passage}.html",
-                           mime="text/html", key="med_dl", help="Ouvrez le fichier dans un navigateur ; Ctrl+P pour l’enregistrer en PDF.")
+        if c2.button("Fermer l’aperçu", key="med_fermer"):
+            st.session_state.pop(cle, None)
+            st.rerun()
+    if cle in st.session_state:
+        st.markdown('<p class="note">Rapport prêt, au format A4. Cliquez sur <b>« Imprimer / Enregistrer en PDF »</b> dans l’aperçu ci-dessous, '
+                    'puis choisissez <b>« Enregistrer au format PDF »</b> comme destination (ou votre imprimante).</p>', unsafe_allow_html=True)
+        components.html(st.session_state[cle].decode("utf-8"), height=820, scrolling=True)
 
     t1, t2, t3 = st.tabs(["📊 Synthèse graphique", "🔢 Réponses détaillées", "🕘 Historique des scores"])
     with t1:
