@@ -15,9 +15,9 @@ DOSSIER = os.path.dirname(os.path.abspath(__file__))
 
 # ============================ À MODIFIER ============================
 ETABLISSEMENT = "CHU Grenoble Alpes"
-TITRE = ("ÉTUDE", "SEMO")   # le 2e mot s'affiche en couleur
+TITRE = ("PROFIL", "SANTE")   # le 2e mot s'affiche en couleur
 SURTITRE = "Questionnaires"
-SOUS_TITRE = "Vous êtes invité(e) à répondre à des questionnaires sur votre mode de vie. A l'issue de la visite complémentaire, votre médecin vous fournira une synthèse claire de votre profil santé."
+SOUS_TITRE = "Vous êtes invité(e) à répondre à des questionnaires sur votre mode de vie. Ces informations seront transmises à votre médecin neurologue."
 PIED_DE_PAGE = "Centre Hospitalier Universitaire Grenoble Alpes · Vos données sont confidentielles et protégées."
 AFFICHER_ETAPES = True            # bandeau « comment ça marche » (3 étapes)
 # ====================================================================
@@ -186,9 +186,9 @@ def afficher(aller):
             f'<p class="lead">{SOUS_TITRE}</p></div>', unsafe_allow_html=True)
         c1, c2 = st.columns(2, gap="small")
         with c1:
-            if st.button("Accès Patient  →", key="btn_patient"):
+            if st.button("Accès Participant  →", key="btn_patient"):
                 aller("patient")
-            st.markdown('<p class="micro">Répondre aux questionnaires<br></p>', unsafe_allow_html=True)
+            st.markdown('<p class="micro">Je réponds aux questionnaires<br></p>', unsafe_allow_html=True)
         with c2:
             if st.button("Accès Médecin", key="btn_medecin"):
                 aller("medecin")
@@ -198,8 +198,8 @@ def afficher(aller):
     if AFFICHER_ETAPES:
         st.markdown(
             '<div class="etapes">'
-            '<div class="etape"><b>1</b><div><strong>Répondez à votre rythme</strong><span>Munissez-vous de votre numéro de patient (PXXX) puis répondez aux questions en faisant des pauses si nécessaire.</span></div></div>'
-            '<div class="etape"><b>2</b><div><strong>Découvrez votre synthèse</strong><span>Des graphiques clairs pour un aperçu de vos réponses domaine par domaine.</span></div></div>'
-            '<div class="etape"><b>3</b><div><strong>Revenez sur vos réponses à tout moment</strong><span>Reconnectez-vous et terminez ou repassez les questionnaires si vous le souhaitez.</span></div></div>'
+            '<div class="etape"><b>1</b><div><strong>Connectez vous</strong><span>Munissez-vous de votre numéro de participant (PXXX) en entrez dans votre espace sécurisé.</span></div></div>'
+            '<div class="etape"><b>2</b><div><strong>Répondez aux questions</strong><span>Prenez le temps nécessaire, quittez et revenez quand vous le souhaitez.</span></div></div>'
+            '<div class="etape"><b>3</b><div><strong>Repassez les questionnaires au besoin</strong><span>Reconnectez-vous et terminez ou repassez les questionnaires si vous le souhaitez.</span></div></div>'
             '</div>', unsafe_allow_html=True)
     st.markdown(f'<div class="pied">{PIED_DE_PAGE}</div>', unsafe_allow_html=True)
