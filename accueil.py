@@ -198,8 +198,8 @@ def afficher(aller):
     if AFFICHER_ETAPES:
         st.markdown(
             '<div class="etapes">'
-            '<div class="etape"><b>1</b><div><strong>Connectez vous</strong><span>Munissez-vous de votre numéro de participant (PXXX) en entrez dans votre espace sécurisé.</span></div></div>'
-            '<div class="etape"><b>2</b><div><strong>Répondez aux questions</strong><span>Prenez le temps nécessaire, quittez et revenez quand vous le souhaitez.</span></div></div>'
-            '<div class="etape"><b>3</b><div><strong>Repassez les questionnaires au besoin</strong><span>Reconnectez-vous et terminez ou repassez les questionnaires si vous le souhaitez.</span></div></div>'
+            '<div class="etape"><b>1</b><div><strong>Connectez vous</strong><span>Munissez-vous de votre numéro de participant (PXXX) et entrez dans votre espace sécurisé.</span></div></div>'
+            '<div class="etape"><b>2</b><div><strong>Répondez aux questions</strong><span>Prenez tout le temps dont vous avez besoin pour répondre. Vous pouvez compléter les questionnaires en plusieurs fois.</span></div></div>'
+            '<div class="etape"><b>3</b><div><strong>Repassez les questionnaires</strong><span>Si vous le souhaitez, reconnectez-vous et terminez/repassez les questionnaires.</span></div></div>'
             '</div>', unsafe_allow_html=True)
     st.markdown(f'<div class="pied">{PIED_DE_PAGE}</div>', unsafe_allow_html=True)
