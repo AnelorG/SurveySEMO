@@ -23,7 +23,7 @@ st.set_page_config(page_title=accueil.TITRE_PAGE, page_icon="🩺", initial_side
 
 
 def _streamlit_assez_recent(minimum=(1, 40)):
-    """Le design (accueil, espace médecin) demande Streamlit >= 1.40."""
+    """Le design (accueil, espace investigateur) demande Streamlit >= 1.40."""
     morceaux = tuple(int(x) for x in re.findall(r"\d+", st.__version__)[:2])
     return morceaux >= minimum
 
@@ -151,12 +151,12 @@ def afficher_page_rapport(modules, pid):
 
 
 def aller(page):
-    """Navigation entre l'accueil, l'accès patient et l'accès médecin (lien direct : ?acces=patient)."""
+    """Navigation entre l'accueil, l'accès participant et l'accès investigateur (lien direct : ?acces=participant)."""
     st.session_state["page"] = page
     if page == "accueil":
         st.query_params.clear()
     else:
-        st.query_params["acces"] = page
+        st.query_params["acces"] = {"medecin": "investigateur"}.get(page, page)
     st.rerun()
 
 
@@ -165,7 +165,9 @@ accueil.appliquer_style()
 if "pid" not in st.session_state:
     if "page" not in st.session_state:
         demande = st.query_params.get("acces", "accueil")
-        st.session_state["page"] = demande if demande in ("patient", "medecin") else "accueil"
+        # anciens liens (?acces=patient / ?acces=medecin) toujours acceptés
+        st.session_state["page"] = {"participant": "participant", "patient": "participant", "investigateur": "medecin",
+                                    "medecin": "medecin"}.get(demande, "accueil")
     if st.session_state["page"] == "accueil":
         accueil.afficher(aller)
         st.stop()
@@ -176,7 +178,7 @@ if "pid" not in st.session_state:
     _, centre, _ = st.columns([1, 2, 1])
     with centre:
         st.markdown(accueil.entete_connexion(
-            "Accès patient", "Connectez-vous avec votre numéro de randomisation et votre date de naissance."),
+            "Accès participant", "Connectez-vous avec votre numéro de randomisation et votre date de naissance."),
             unsafe_allow_html=True)
         with st.form("login"):
             numero = st.text_input("Numéro de randomisation")
@@ -196,6 +198,7 @@ if "pid" not in st.session_state:
                 rep = db.charger_reponses(numero, p)
                 auj = date.today()
                 age = auj.year - naissance.year - ((auj.month, auj.day) < (naissance.month, naissance.day))
+                rep.setdefault("_age", age)  # nécessaire aux questions conditionnées par l'âge
                 st.session_state.update(pid=numero, age=age, passage=p, reponses=rep,
                                         etape=premiere_etape(modules, rep), parcours=list(range(len(modules))),
                                         source=None, copie_ids=[])
@@ -239,7 +242,7 @@ if etape in numerotes:
 st.header(m["titre"])
 st.write(m.get("introduction", ""))
 
-saisies = {}
+saisies = {"_age": st.session_state.get("age")}  # l'âge sert aux conditions « _age » (ex. module Réserve cognitive)
 for q in m["questions"]:
     if est_visible(q, saisies):
         saisies[q["id"]] = afficher_question(q, reponses.get(q["id"]))
@@ -258,10 +261,11 @@ if precedent:
 if suivant:
     manquantes = [q["texte"] for q in m["questions"]
                   if est_visible(q, saisies) and est_manquante(q, saisies[q["id"]])]
-    conflits = [q["texte"] for q in m["questions"] if q["type"] == "choix_multiple" and q.get("exclusives") and est_visible(q, saisies)
+    conflits = [q for q in m["questions"] if q["type"] == "choix_multiple" and q.get("exclusives") and est_visible(q, saisies)
                 and len(saisies[q["id"]] or []) > 1 and any(x in q["exclusives"] for x in saisies[q["id"]])]
     if conflits and not manquantes:
-        st.error("Certaines réponses ne peuvent pas être combinées : « " + " » ou « ".join(next(q["exclusives"] for q in m["questions"] if q.get("exclusives")))
+        q0 = conflits[0]
+        st.error(f"Question « {q0['texte'][:90]} » : « " + " » ou « ".join(q0["exclusives"])
                  + " » doit être choisi seul (sans autre réponse).")
     elif manquantes:
         st.toast("⚠️ Certains éléments obligatoires ne sont pas complétés", icon="⚠️")

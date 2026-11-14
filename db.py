@@ -36,7 +36,7 @@ def init_db():
         ci.execute("""CREATE TABLE IF NOT EXISTS identites (
             numero TEXT PRIMARY KEY, nom TEXT, prenom TEXT, naissance TEXT,
             groupe TEXT, date_inclusion TEXT, source TEXT)""")
-        # Suivi du patient : effets indésirables, remarques, plaintes, conditions de complétion...
+        # Suivi du participant : effets indésirables, remarques, plaintes, conditions de complétion...
         ci.execute("""CREATE TABLE IF NOT EXISTS suivi (
             id INTEGER PRIMARY KEY AUTOINCREMENT, numero TEXT NOT NULL, categorie TEXT NOT NULL, options TEXT,
             gravite TEXT, evolution TEXT, grave INTEGER DEFAULT 0, date_evenement TEXT, commentaire TEXT,
@@ -204,7 +204,7 @@ def copier_modules(numero, de_passage, vers_passage, module_ids):
             (vers_passage, numero, de_passage, *module_ids))
 
 
-# ---------------------------------------------------------------- espace médecin
+# ---------------------------------------------------------------- espace investigateur
 def groupe_pour(numero):
     """P000 : numéro < 500 -> groupe TEST ; sinon CONTROL."""
     chiffres = re.sub(r"\D", "", str(numero))
@@ -237,28 +237,28 @@ def tirer_numero():
     return secrets.choice(libres) if libres else None
 
 
-def ajouter_patient(numero, nom, prenom, naissance, utilisateur="médecin"):
-    """Inclut un patient (formulaire médecin). Retourne False si le numéro existe déjà."""
+def ajouter_patient(numero, nom, prenom, naissance, utilisateur="investigateur"):
+    """Inclut un participant (formulaire investigateur). Retourne False si le numéro existe déjà."""
     init_db()
     if numero_pris(numero):
         return False
     ajouter_si_absent(numero, naissance)
     ajouter_identite_si_absente(numero, nom, prenom, naissance, source="formulaire")
-    journaliser("Création du patient", numero, {"groupe": groupe_pour(numero)}, utilisateur)
+    journaliser("Création du participant", numero, {"groupe": groupe_pour(numero)}, utilisateur)
     return True
 
 
 def lister_patients():
-    """Tous les patients inclus (base des participants) + identité si connue."""
+    """Tous les participants inclus (base des participants) + identité si connue."""
     with connexion_identites() as ci:
         ident = {l[0]: l[1:] for l in ci.execute(
             "SELECT numero, nom, prenom, naissance, groupe, date_inclusion, source FROM identites")}
-    patients = []
+    participants = []
     for numero in sorted(numeros_existants()):
         nom, prenom, naissance, groupe, inclusion, source = ident.get(numero, ("", "", "", groupe_pour(numero), "", ""))
-        patients.append(dict(numero=numero, nom=nom, prenom=prenom, naissance=naissance,
+        participants.append(dict(numero=numero, nom=nom, prenom=prenom, naissance=naissance,
                              groupe=groupe or groupe_pour(numero), inclusion=inclusion, source=source))
-    return patients
+    return participants
 
 
 def toutes_reponses():
@@ -304,7 +304,7 @@ def journaliser(action, numero=None, details=None, utilisateur="système"):
 
 
 def lire_journal(numero=None):
-    """Entrées du journal (les plus récentes d'abord), pour un patient ou pour tous."""
+    """Entrées du journal (les plus récentes d'abord), pour un participant ou pour tous."""
     requete = "SELECT date_heure, utilisateur, action, numero, details FROM journal"
     with connexion_identites() as ci:
         lignes = ci.execute(requete + (" WHERE numero=?" if numero else "") + " ORDER BY id DESC",
@@ -315,7 +315,7 @@ def lire_journal(numero=None):
 
 def numeros_supprimes():
     with connexion_identites() as ci:
-        return {l[0] for l in ci.execute("SELECT numero FROM journal WHERE action='Suppression du patient' AND numero IS NOT NULL")}
+        return {l[0] for l in ci.execute("SELECT numero FROM journal WHERE action IN ('Suppression du participant', 'Suppression du patient') AND numero IS NOT NULL")}
 
 
 def get_identite(numero):
@@ -324,8 +324,8 @@ def get_identite(numero):
     return dict(nom=l[0], prenom=l[1], naissance=l[2]) if l else dict(nom="", prenom="", naissance="")
 
 
-def modifier_identite(numero, nom, prenom, naissance, utilisateur="médecin"):
-    """Met à jour nom / prénom / date de naissance. Si la date change, la connexion du patient est mise à jour.
+def modifier_identite(numero, nom, prenom, naissance, utilisateur="investigateur"):
+    """Met à jour nom / prénom / date de naissance. Si la date change, la connexion du participant est mise à jour.
     Retourne {champ: (avant, après)} (vide si rien n'a changé)."""
     avant = get_identite(numero)
     apres = dict(nom=nom.strip(), prenom=prenom.strip(), naissance=naissance.isoformat())
@@ -334,22 +334,22 @@ def modifier_identite(numero, nom, prenom, naissance, utilisateur="médecin"):
         return {}
     with connexion_identites() as ci:
         ci.execute("INSERT OR IGNORE INTO identites (numero, nom, prenom, naissance, groupe, date_inclusion, source) VALUES (?,?,?,?,?,?,?)",
-                   (numero, "", "", "", groupe_pour(numero), datetime.now().isoformat(timespec="seconds"), "espace médecin"))
+                   (numero, "", "", "", groupe_pour(numero), datetime.now().isoformat(timespec="seconds"), "espace investigateur"))
         ci.execute("UPDATE identites SET nom=?, prenom=?, naissance=? WHERE numero=?",
                    (apres["nom"], apres["prenom"], apres["naissance"], numero))
     if "naissance" in changements:
-        mettre_a_jour_naissance(numero, naissance)  # le patient devra utiliser la nouvelle date pour se connecter
+        mettre_a_jour_naissance(numero, naissance)  # le participant devra utiliser la nouvelle date pour se connecter
     journaliser("Modification des informations de base", numero,
                 {k: {"avant": a, "apres": b} for k, (a, b) in changements.items()}, utilisateur)
     return changements
 
 
-def debloquer_compte(numero, utilisateur="médecin"):
+def debloquer_compte(numero, utilisateur="investigateur"):
     debloquer(numero)
-    journaliser("Déblocage du compte patient", numero, None, utilisateur)
+    journaliser("Déblocage du compte participant", numero, None, utilisateur)
 
 
-def ajouter_suivi(numero, categorie, options, gravite, evolution, grave, date_evenement, commentaire, utilisateur="médecin"):
+def ajouter_suivi(numero, categorie, options, gravite, evolution, grave, date_evenement, commentaire, utilisateur="investigateur"):
     with connexion_identites() as ci:
         ci.execute("""INSERT INTO suivi (numero, categorie, options, gravite, evolution, grave, date_evenement, commentaire, cree_le, cree_par)
                       VALUES (?,?,?,?,?,?,?,?,?,?)""",
@@ -373,9 +373,9 @@ def lister_suivi(numero=None):
     return sortie
 
 
-def supprimer_patient(numero, motif, precision="", utilisateur="médecin"):
-    """Efface DÉFINITIVEMENT le patient : identité, réponses, suivi. Ne subsiste qu'une trace minimale dans le journal
-    (numéro, date, motif, utilisateur) ; les anciennes entrées du journal sur ce patient sont vidées de leur contenu."""
+def supprimer_patient(numero, motif, precision="", utilisateur="investigateur"):
+    """Efface DÉFINITIVEMENT le participant : identité, réponses, suivi. Ne subsiste qu'une trace minimale dans le journal
+    (numéro, date, motif, utilisateur) ; les anciennes entrées du journal sur ce participant sont vidées de leur contenu."""
     with connexion() as c:
         c.execute("DELETE FROM reponses WHERE numero=?", (numero,))
         c.execute("DELETE FROM participants WHERE numero=?", (numero,))
@@ -383,4 +383,4 @@ def supprimer_patient(numero, motif, precision="", utilisateur="médecin"):
         ci.execute("DELETE FROM identites WHERE numero=?", (numero,))
         ci.execute("DELETE FROM suivi WHERE numero=?", (numero,))
         ci.execute("UPDATE journal SET details='{\"efface\": true}' WHERE numero=? AND details IS NOT NULL", (numero,))
-    journaliser("Suppression du patient", numero, {"motif": motif, "precision": (precision or "").strip()}, utilisateur)
+    journaliser("Suppression du participant", numero, {"motif": motif, "precision": (precision or "").strip()}, utilisateur)
