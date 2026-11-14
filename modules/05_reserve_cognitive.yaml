@@ -1,0 +1,1907 @@
+# MODULE 5 – RÉSERVE COGNITIVE : Questionnaire sur les expériences de la vie (QEV / LEQ)   (document de validation du 12/11/2026)
+# Version française QEV de C. Berr et D. Villebrun (INSERM U1061, 2011) ; référence : Valenzuela & Sachdev (2007) ; Ourry et al. (2021).
+# Conditions : voir la liste en tête du module 1. Particularité : `question: _age` désigne l'âge du participant (les périodes « 30 à 65 ans » et
+# « depuis 65 ans » ne sont posées qu'aux personnes concernées). Une condition peut aussi être une LISTE de conditions (toutes doivent être vraies).
+# Cotation : voir cotations.py (sous-score général 0-35 par période). Les scores SPÉCIFIQUES et le score total LEQ ne sont pas calculés
+# (barème de la version française 2011 « à confirmer » dans le document de validation).
+id: reserve_cognitive
+titre: Module 5 – Réserve cognitive (QEV / LEQ)
+introduction: 'Ce questionnaire explore vos activités intellectuelles, sociales et de loisirs au fil de la vie (jeune adulte, vie adulte, puis à partir de 65 ans). Répondez aussi précisément que possible
+  : une estimation suffit.
+
+
+  *Appuyez sur Entrée après avoir tapé une réponse écrite : les questions qui en dépendent apparaissent alors.*'
+questions:
+- id: info_0
+  texte: 'Répondez aussi précisément que possible. Cochez une réponse par question, sauf indication contraire. Durée indicative : environ 20 minutes. *Votre numéro, votre date de naissance et votre âge
+    sont déjà connus de l’application : il n’est pas nécessaire de les ressaisir.*'
+  type: info
+- id: titre_1
+  texte: Jeune adulte – De 13 à 30 ans
+  type: section
+- id: info_2
+  texte: '**Questions spécifiques**'
+  type: info
+- id: ja_s1_primaire
+  type: choix_unique
+  texte: JA-S1. Combien d’années d’études primaires avez-vous terminé ?
+  options: &id001
+  - Aucune
+  - '1'
+  - '2'
+  - '3'
+  - '4'
+  - '5'
+  - '6'
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  horizontal: true
+- id: ja_s2_secondaire
+  type: choix_unique
+  texte: JA-S2. Après vos études à l’école primaire, pendant combien d’années avez-vous étudié dans un établissement d’enseignement secondaire (collège, lycée, établissement technique…) ?
+  options: *id001
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  horizontal: true
+- id: ja_s3_diplome_secondaire
+  type: oui_non
+  texte: JA-S3. Avez-vous obtenu un diplôme d’études secondaires (baccalauréat, Brevet, BEPC, BEP, CAP…) ?
+- id: ja_s4_etudes
+  type: choix_unique
+  texte: JA-S4. Avez-vous poursuivi, quel que soit le type de formation, des études après avoir quitté l’école, le collège ou le lycée (uniquement entre 13 et 30 ans) ?
+  options:
+  - Non
+  - Oui
+  horizontal: true
+- id: info_7
+  texte: Pour chaque formation suivie, renseignez les trois champs (durée, temps, part suivie). Laissez « Aucune » ou vide pour les formations que vous n’avez pas suivies. Si votre situation ne figure pas
+    dans la liste, précisez-la sous « Autres formations ».
+  type: info
+  si: &id002
+    question: ja_s4_etudes
+    egal: Oui
+- id: info_8
+  texte: '**Emplois de bureau (administration, comptabilité)**'
+  type: info
+  si: *id002
+- id: ja_form_bureau_duree
+  type: choix_unique
+  texte: Durée d’inscription (années)
+  options: *id001
+  horizontal: true
+  obligatoire: false
+  si: *id002
+- id: ja_form_bureau_temps
+  type: choix_unique
+  texte: Temps
+  options:
+  - Temps complet
+  - Temps partiel
+  horizontal: true
+  si: &id003
+    question: ja_form_bureau_duree
+    egal: &id004
+    - '1'
+    - '2'
+    - '3'
+    - '4'
+    - '5'
+    - '6'
+- id: ja_form_bureau_part
+  type: choix_unique
+  texte: Part de la formation effectivement suivie
+  options:
+  - 25 %
+  - 50 %
+  - 75 %
+  - 100 %
+  horizontal: true
+  si: *id003
+- id: info_12
+  texte: '**Métiers de la gestion et du commerce**'
+  type: info
+  si: *id002
+- id: ja_form_gestion_duree
+  type: choix_unique
+  texte: Durée d’inscription (années)
+  options: *id001
+  horizontal: true
+  obligatoire: false
+  si: *id002
+- id: ja_form_gestion_temps
+  type: choix_unique
+  texte: Temps
+  options:
+  - Temps complet
+  - Temps partiel
+  horizontal: true
+  si: &id005
+    question: ja_form_gestion_duree
+    egal: *id004
+- id: ja_form_gestion_part
+  type: choix_unique
+  texte: Part de la formation effectivement suivie
+  options:
+  - 25 %
+  - 50 %
+  - 75 %
+  - 100 %
+  horizontal: true
+  si: *id005
+- id: info_16
+  texte: '**Apprentissage**'
+  type: info
+  si: *id002
+- id: ja_form_apprentissage_duree
+  type: choix_unique
+  texte: Durée d’inscription (années)
+  options: *id001
+  horizontal: true
+  obligatoire: false
+  si: *id002
+- id: ja_form_apprentissage_temps
+  type: choix_unique
+  texte: Temps
+  options:
+  - Temps complet
+  - Temps partiel
+  horizontal: true
+  si: &id006
+    question: ja_form_apprentissage_duree
+    egal: *id004
+- id: ja_form_apprentissage_part
+  type: choix_unique
+  texte: Part de la formation effectivement suivie
+  options:
+  - 25 %
+  - 50 %
+  - 75 %
+  - 100 %
+  horizontal: true
+  si: *id006
+- id: info_20
+  texte: '**Autres formations techniques**'
+  type: info
+  si: *id002
+- id: ja_form_techniques_duree
+  type: choix_unique
+  texte: Durée d’inscription (années)
+  options: *id001
+  horizontal: true
+  obligatoire: false
+  si: *id002
+- id: ja_form_techniques_temps
+  type: choix_unique
+  texte: Temps
+  options:
+  - Temps complet
+  - Temps partiel
+  horizontal: true
+  si: &id007
+    question: ja_form_techniques_duree
+    egal: *id004
+- id: ja_form_techniques_part
+  type: choix_unique
+  texte: Part de la formation effectivement suivie
+  options:
+  - 25 %
+  - 50 %
+  - 75 %
+  - 100 %
+  horizontal: true
+  si: *id007
+- id: info_24
+  texte: '**Diplôme universitaire (DEUG, licence)**'
+  type: info
+  si: *id002
+- id: ja_form_licence_duree
+  type: choix_unique
+  texte: Durée d’inscription (années)
+  options: *id001
+  horizontal: true
+  obligatoire: false
+  si: *id002
+- id: ja_form_licence_temps
+  type: choix_unique
+  texte: Temps
+  options:
+  - Temps complet
+  - Temps partiel
+  horizontal: true
+  si: &id008
+    question: ja_form_licence_duree
+    egal: *id004
+- id: ja_form_licence_part
+  type: choix_unique
+  texte: Part de la formation effectivement suivie
+  options:
+  - 25 %
+  - 50 %
+  - 75 %
+  - 100 %
+  horizontal: true
+  si: *id008
+- id: info_28
+  texte: '**Diplôme universitaire (Maîtrise, DEA, DESS, master)**'
+  type: info
+  si: *id002
+- id: ja_form_master_duree
+  type: choix_unique
+  texte: Durée d’inscription (années)
+  options: *id001
+  horizontal: true
+  obligatoire: false
+  si: *id002
+- id: ja_form_master_temps
+  type: choix_unique
+  texte: Temps
+  options:
+  - Temps complet
+  - Temps partiel
+  horizontal: true
+  si: &id009
+    question: ja_form_master_duree
+    egal: *id004
+- id: ja_form_master_part
+  type: choix_unique
+  texte: Part de la formation effectivement suivie
+  options:
+  - 25 %
+  - 50 %
+  - 75 %
+  - 100 %
+  horizontal: true
+  si: *id009
+- id: info_32
+  texte: '**Doctorat**'
+  type: info
+  si: *id002
+- id: ja_form_doctorat_duree
+  type: choix_unique
+  texte: Durée d’inscription (années)
+  options: *id001
+  horizontal: true
+  obligatoire: false
+  si: *id002
+- id: ja_form_doctorat_temps
+  type: choix_unique
+  texte: Temps
+  options:
+  - Temps complet
+  - Temps partiel
+  horizontal: true
+  si: &id010
+    question: ja_form_doctorat_duree
+    egal: *id004
+- id: ja_form_doctorat_part
+  type: choix_unique
+  texte: Part de la formation effectivement suivie
+  options:
+  - 25 %
+  - 50 %
+  - 75 %
+  - 100 %
+  horizontal: true
+  si: *id010
+- id: info_36
+  texte: '**Autres formations diplômantes**'
+  type: info
+  si: *id002
+- id: ja_form_diplomantes_duree
+  type: choix_unique
+  texte: Durée d’inscription (années)
+  options: *id001
+  horizontal: true
+  obligatoire: false
+  si: *id002
+- id: ja_form_diplomantes_temps
+  type: choix_unique
+  texte: Temps
+  options:
+  - Temps complet
+  - Temps partiel
+  horizontal: true
+  si: &id011
+    question: ja_form_diplomantes_duree
+    egal: *id004
+- id: ja_form_diplomantes_part
+  type: choix_unique
+  texte: Part de la formation effectivement suivie
+  options:
+  - 25 %
+  - 50 %
+  - 75 %
+  - 100 %
+  horizontal: true
+  si: *id011
+- id: info_40
+  texte: '**Autres formations**'
+  type: info
+  si: *id002
+- id: ja_form_autres_duree
+  type: choix_unique
+  texte: Durée d’inscription (années)
+  options: *id001
+  horizontal: true
+  obligatoire: false
+  si: *id002
+- id: ja_form_autres_temps
+  type: choix_unique
+  texte: Temps
+  options:
+  - Temps complet
+  - Temps partiel
+  horizontal: true
+  si: &id012
+    question: ja_form_autres_duree
+    egal: *id004
+- id: ja_form_autres_part
+  type: choix_unique
+  texte: Part de la formation effectivement suivie
+  options:
+  - 25 %
+  - 50 %
+  - 75 %
+  - 100 %
+  horizontal: true
+  si: *id012
+- id: ja_form_autres_intitule
+  type: texte_court
+  texte: Intitulé des autres formations
+  obligatoire: false
+  si: *id012
+- id: titre_45
+  texte: Questions générales – 13 à 30 ans
+  type: section
+- id: ja_g1_famille
+  type: choix_unique
+  texte: JA-G1. Combien de fois voyiez-vous un membre de votre famille ou un ami au cours de cette période ?
+  options: &id013
+  - Jamais
+  - Moins d’une fois par mois
+  - Chaque mois
+  - Tous les 15 jours
+  - Chaque semaine
+  - Chaque jour
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  horizontal: true
+- id: ja_g2_musique
+  type: choix_unique
+  texte: JA-G2. Combien de fois étudiiez-vous ou jouiez-vous d’un instrument de musique ?
+  options: *id013
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  horizontal: true
+- id: ja_g3_art
+  type: choix_unique
+  texte: 'JA-G3. Combien de fois étudiiez-vous ou pratiquiez-vous des loisirs artistiques (par exemple : dessiner, peindre, écrire, théâtre)'
+  options: *id013
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  horizontal: true
+- id: info_49
+  texte: '**JA-G4. Combien de fois faisiez-vous du sport ou des activités physiques entraînant une dépense d’énergie faible, moyenne ou intense ?**'
+  type: info
+- id: ja_g4_faible
+  type: choix_unique
+  texte: 'Activités avec dépense d’énergie faible (par exemple : marche, bricolage, jardinage, travaux ménagers, cuisine, pêche, pétanque)'
+  options: *id013
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  horizontal: true
+- id: ja_g4_moyenne
+  type: choix_unique
+  texte: 'Activités avec dépense d’énergie moyenne (par exemple : danse, golf, tonte de la pelouse, natation de loisir, vélo « facile »)'
+  options: *id013
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  horizontal: true
+- id: ja_g4_intense
+  type: choix_unique
+  texte: 'Activités avec dépense d’énergie intense (par exemple : course à pied, tennis de compétition, squash, vélo « sportif »)'
+  options: *id013
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  horizontal: true
+- id: ja_g5_lecture
+  type: choix_unique
+  texte: JA-G5. Combien de fois lisiez-vous, quel que soit le document, pendant plus de 20 min ?
+  options: *id013
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  horizontal: true
+- id: ja_g6_langue
+  type: choix_unique
+  texte: JA-G6. Combien de fois pratiquiez-vous une deuxième langue (lecture, écriture, conversation ou cours de langue) ?
+  options: *id013
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  horizontal: true
+- id: info_55
+  texte: "**JA-G7. Avez-vous voyagé dans un des pays ou continents suivants entre l’âge de 13 et 30 ans ?**  \n*Cochez toutes les cases correspondant à vos voyages.*"
+  type: info
+- id: ja_g7_voyages
+  type: choix_multiple
+  texte: Pays ou continents visités
+  options:
+  - Aucun
+  - Europe de l’ouest
+  - Europe de l’est/ex URSS
+  - Pays du Maghreb et d’Afrique
+  - Moyen-Orient
+  - Amérique du Nord
+  - Amérique Centrale/latine
+  - Asie
+  - Australie et Iles Pacifiques
+  exclusives:
+  - Aucun
+- id: ja_g8_loisirs
+  type: texte_court
+  texte: JA-G8. Avez-vous eu d’autres activités de loisirs, violons d’Ingres (hobbies) ou centres d’intérêt entre l’âge de 13 et 30 ans qui ne sont pas cités dans ce questionnaire ? Si oui, donnez-en la
+    liste (laissez vide sinon)
+  obligatoire: false
+- id: titre_58
+  texte: Adulte – De 30 à 65 ans
+  type: section
+  si: &id014
+    question: _age
+    sup: 29
+- id: info_59
+  texte: '*Cette partie ne concerne que les personnes de 30 ans ou plus.*'
+  type: info
+  si: *id014
+- id: info_60
+  texte: "**AD-S1. Reconstituez l’historique des emplois ou professions occupés depuis votre dernier emploi ou votre retraite, en remontant à l’âge de 30 ans.**  \nPour chaque tranche d’âge, indiquez l’activité\
+    \ principale si vous avez occupé plusieurs emplois, puis choisissez la catégorie professionnelle (voir les catégories du QEV)."
+  type: info
+  si: *id014
+- id: info_61
+  texte: '**60–65 ans**'
+  type: info
+  si: &id015
+  - *id014
+  - question: _age
+    sup: 59
+- id: ad_s1_60_65_intitule
+  type: texte_court
+  texte: Intitulé de l’emploi principal
+  obligatoire: false
+  si: *id015
+- id: ad_s1_60_65_categorie
+  type: choix_unique
+  texte: Catégorie professionnelle
+  options: &id017
+  - 1 – Directeurs, cadres de direction et gérants
+  - 2 – Professions intellectuelles et scientifiques (sciences et techniques, informatique, santé, enseignement, justice, culture…)
+  - 3 – Professions intermédiaires (techniciens, inspecteurs, infirmiers et paramédicaux, finance, services juridiques et sociaux…)
+  - 4 – Employés de type administratif (bureau, secrétariat, accueil, comptabilité)
+  - 5 – Services directs aux particuliers, commerçants et vendeurs (vendeurs, coiffeurs, serveurs, aides-soignants, sécurité…)
+  - 6 – Agriculteurs et ouvriers qualifiés de l’agriculture, de la sylviculture et de la pêche
+  - 7 – Métiers qualifiés de l’industrie et de l’artisanat (bâtiment, métallurgie, électricité, imprimerie, habillement…)
+  - 8 – Conducteurs d’installations et de machines, ouvriers de l’assemblage (chauffeurs, conducteurs, mineurs, matelots)
+  - 9 – Professions élémentaires (aides de ménage, agents d’entretien, manœuvres…)
+  - 10 – Femmes au foyer
+  - 11 – Retraités ou sans emploi
+  - 12 – Professions militaires
+  si: *id015
+- id: info_64
+  texte: '**55–59 ans**'
+  type: info
+  si: &id016
+  - *id014
+  - question: _age
+    sup: 54
+- id: ad_s1_55_59_intitule
+  type: texte_court
+  texte: Intitulé de l’emploi principal
+  obligatoire: false
+  si: *id016
+- id: ad_s1_55_59_categorie
+  type: choix_unique
+  texte: Catégorie professionnelle
+  options: *id017
+  si: *id016
+- id: info_67
+  texte: '**50–54 ans**'
+  type: info
+  si: &id018
+  - *id014
+  - question: _age
+    sup: 49
+- id: ad_s1_50_54_intitule
+  type: texte_court
+  texte: Intitulé de l’emploi principal
+  obligatoire: false
+  si: *id018
+- id: ad_s1_50_54_categorie
+  type: choix_unique
+  texte: Catégorie professionnelle
+  options: *id017
+  si: *id018
+- id: info_70
+  texte: '**45–49 ans**'
+  type: info
+  si: &id019
+  - *id014
+  - question: _age
+    sup: 44
+- id: ad_s1_45_49_intitule
+  type: texte_court
+  texte: Intitulé de l’emploi principal
+  obligatoire: false
+  si: *id019
+- id: ad_s1_45_49_categorie
+  type: choix_unique
+  texte: Catégorie professionnelle
+  options: *id017
+  si: *id019
+- id: info_73
+  texte: '**40–44 ans**'
+  type: info
+  si: &id020
+  - *id014
+  - question: _age
+    sup: 39
+- id: ad_s1_40_44_intitule
+  type: texte_court
+  texte: Intitulé de l’emploi principal
+  obligatoire: false
+  si: *id020
+- id: ad_s1_40_44_categorie
+  type: choix_unique
+  texte: Catégorie professionnelle
+  options: *id017
+  si: *id020
+- id: info_76
+  texte: '**35–39 ans**'
+  type: info
+  si: &id021
+  - *id014
+  - question: _age
+    sup: 34
+- id: ad_s1_35_39_intitule
+  type: texte_court
+  texte: Intitulé de l’emploi principal
+  obligatoire: false
+  si: *id021
+- id: ad_s1_35_39_categorie
+  type: choix_unique
+  texte: Catégorie professionnelle
+  options: *id017
+  si: *id021
+- id: info_79
+  texte: '**30–34 ans**'
+  type: info
+  si: *id014
+- id: ad_s1_30_34_intitule
+  type: texte_court
+  texte: Intitulé de l’emploi principal
+  obligatoire: false
+  si: *id014
+- id: ad_s1_30_34_categorie
+  type: choix_unique
+  texte: Catégorie professionnelle
+  options: *id017
+  si: *id014
+- id: ad_s2_encadrement
+  type: choix_unique
+  texte: AD-S2. Parmi ces activités professionnelles, lesquelles impliquaient d’encadrer, diriger ou être responsable d’autres personnes ?
+  options:
+  - Non
+  - Oui
+  horizontal: true
+  si: *id014
+- id: ad_s2_60_65_effectif
+  type: choix_unique
+  texte: Personnes encadrées entre 60 et 65 ans
+  options:
+  - Aucune personne encadrée / sans objet
+  - 1–5 personnes
+  - 6–10 personnes
+  - Plus de 10 personnes
+  horizontal: true
+  si:
+  - *id014
+  - &id022
+    question: ad_s2_encadrement
+    egal: Oui
+  - question: _age
+    sup: 59
+- id: ad_s2_55_59_effectif
+  type: choix_unique
+  texte: Personnes encadrées entre 55 et 59 ans
+  options:
+  - Aucune personne encadrée / sans objet
+  - 1–5 personnes
+  - 6–10 personnes
+  - Plus de 10 personnes
+  horizontal: true
+  si:
+  - *id014
+  - *id022
+  - question: _age
+    sup: 54
+- id: ad_s2_50_54_effectif
+  type: choix_unique
+  texte: Personnes encadrées entre 50 et 54 ans
+  options:
+  - Aucune personne encadrée / sans objet
+  - 1–5 personnes
+  - 6–10 personnes
+  - Plus de 10 personnes
+  horizontal: true
+  si:
+  - *id014
+  - *id022
+  - question: _age
+    sup: 49
+- id: ad_s2_45_49_effectif
+  type: choix_unique
+  texte: Personnes encadrées entre 45 et 49 ans
+  options:
+  - Aucune personne encadrée / sans objet
+  - 1–5 personnes
+  - 6–10 personnes
+  - Plus de 10 personnes
+  horizontal: true
+  si:
+  - *id014
+  - *id022
+  - question: _age
+    sup: 44
+- id: ad_s2_40_44_effectif
+  type: choix_unique
+  texte: Personnes encadrées entre 40 et 44 ans
+  options:
+  - Aucune personne encadrée / sans objet
+  - 1–5 personnes
+  - 6–10 personnes
+  - Plus de 10 personnes
+  horizontal: true
+  si:
+  - *id014
+  - *id022
+  - question: _age
+    sup: 39
+- id: ad_s2_35_39_effectif
+  type: choix_unique
+  texte: Personnes encadrées entre 35 et 39 ans
+  options:
+  - Aucune personne encadrée / sans objet
+  - 1–5 personnes
+  - 6–10 personnes
+  - Plus de 10 personnes
+  horizontal: true
+  si:
+  - *id014
+  - *id022
+  - question: _age
+    sup: 34
+- id: ad_s2_30_34_effectif
+  type: choix_unique
+  texte: Personnes encadrées entre 30 et 34 ans
+  options:
+  - Aucune personne encadrée / sans objet
+  - 1–5 personnes
+  - 6–10 personnes
+  - Plus de 10 personnes
+  horizontal: true
+  si:
+  - *id014
+  - *id022
+- id: titre_90
+  texte: Questions générales – 30 à 65 ans
+  type: section
+  si: *id014
+- id: ad_g1_famille
+  type: choix_unique
+  texte: AD-G1. Combien de fois voyiez-vous un membre de votre famille ou un ami au cours de cette période ?
+  options: *id013
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  horizontal: true
+  si: *id014
+- id: ad_g2_musique
+  type: choix_unique
+  texte: AD-G2. Combien de fois étudiiez-vous ou jouiez-vous d’un instrument de musique ?
+  options: *id013
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  horizontal: true
+  si: *id014
+- id: ad_g3_art
+  type: choix_unique
+  texte: 'AD-G3. Combien de fois étudiiez-vous ou pratiquiez-vous des loisirs artistiques (par exemple : dessiner, peindre, écrire, théâtre)'
+  options: *id013
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  horizontal: true
+  si: *id014
+- id: info_94
+  texte: '**AD-G4. Combien de fois faisiez-vous du sport ou des activités physiques entraînant une dépense d’énergie faible, moyenne ou intense ?**'
+  type: info
+  si: *id014
+- id: ad_g4_faible
+  type: choix_unique
+  texte: 'Activités avec dépense d’énergie faible (par exemple : marche, bricolage, jardinage, travaux ménagers, cuisine, pêche, pétanque)'
+  options: *id013
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  horizontal: true
+  si: *id014
+- id: ad_g4_moyenne
+  type: choix_unique
+  texte: 'Activités avec dépense d’énergie moyenne (par exemple : danse, golf, tonte de la pelouse, natation de loisir, vélo « facile »)'
+  options: *id013
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  horizontal: true
+  si: *id014
+- id: ad_g4_intense
+  type: choix_unique
+  texte: 'Activités avec dépense d’énergie intense (par exemple : course à pied, tennis de compétition, squash, vélo « sportif »)'
+  options: *id013
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  horizontal: true
+  si: *id014
+- id: ad_g5_lecture
+  type: choix_unique
+  texte: AD-G5. Combien de fois lisiez-vous, quel que soit le document, pendant plus de 20 min ?
+  options: *id013
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  horizontal: true
+  si: *id014
+- id: ad_g6_langue
+  type: choix_unique
+  texte: AD-G6. Combien de fois pratiquiez-vous une deuxième langue (lecture, écriture, conversation ou cours de langue) ?
+  options: *id013
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  horizontal: true
+  si: *id014
+- id: info_100
+  texte: "**AD-G7. Avez-vous voyagé dans un des pays ou continents suivants entre l’âge de 30 et 65 ans ?**  \n*Cochez toutes les cases correspondant à vos voyages.*"
+  type: info
+  si: *id014
+- id: ad_g7_voyages
+  type: choix_multiple
+  texte: Pays ou continents visités
+  options:
+  - Aucun
+  - Europe de l’ouest
+  - Europe de l’est/ex URSS
+  - Pays du Maghreb et d’Afrique
+  - Moyen-Orient
+  - Amérique du Nord
+  - Amérique Centrale/latine
+  - Asie
+  - Australie et Iles Pacifiques
+  exclusives:
+  - Aucun
+  si: *id014
+- id: ad_g8_loisirs
+  type: texte_court
+  texte: AD-G8. Avez-vous eu d’autres activités de loisirs, violons d’Ingres (hobbies) ou centres d’intérêt entre l’âge de 30 et 65 ans qui ne sont pas cités dans ce questionnaire ? Si oui, donnez-en la
+    liste (laissez vide sinon)
+  obligatoire: false
+  si: *id014
+- id: ad_g9_formation
+  type: choix_unique
+  texte: AD-G9. Entre 30 et 65 ans, avez-vous suivi une formation académique ?
+  options:
+  - Non
+  - Oui
+  horizontal: true
+  si: *id014
+- id: info_104
+  texte: Pour chaque formation suivie, renseignez les trois champs (durée, temps, part suivie). Laissez « Aucune » ou vide pour les formations que vous n’avez pas suivies. Si votre situation ne figure pas
+    dans la liste, précisez-la sous « Autres formations ».
+  type: info
+  si: &id023
+  - *id014
+  - question: ad_g9_formation
+    egal: Oui
+- id: info_105
+  texte: '**Emplois de bureau (administration, comptabilité)**'
+  type: info
+  si: *id023
+- id: ad_form_bureau_duree
+  type: choix_unique
+  texte: Durée d’inscription (années)
+  options: *id001
+  horizontal: true
+  obligatoire: false
+  si: *id023
+- id: ad_form_bureau_temps
+  type: choix_unique
+  texte: Temps
+  options:
+  - Temps complet
+  - Temps partiel
+  horizontal: true
+  si: &id024
+    question: ad_form_bureau_duree
+    egal: *id004
+- id: ad_form_bureau_part
+  type: choix_unique
+  texte: Part de la formation effectivement suivie
+  options:
+  - 25 %
+  - 50 %
+  - 75 %
+  - 100 %
+  horizontal: true
+  si: *id024
+- id: info_109
+  texte: '**Métiers de la gestion et du commerce**'
+  type: info
+  si: *id023
+- id: ad_form_gestion_duree
+  type: choix_unique
+  texte: Durée d’inscription (années)
+  options: *id001
+  horizontal: true
+  obligatoire: false
+  si: *id023
+- id: ad_form_gestion_temps
+  type: choix_unique
+  texte: Temps
+  options:
+  - Temps complet
+  - Temps partiel
+  horizontal: true
+  si: &id025
+    question: ad_form_gestion_duree
+    egal: *id004
+- id: ad_form_gestion_part
+  type: choix_unique
+  texte: Part de la formation effectivement suivie
+  options:
+  - 25 %
+  - 50 %
+  - 75 %
+  - 100 %
+  horizontal: true
+  si: *id025
+- id: info_113
+  texte: '**Apprentissage**'
+  type: info
+  si: *id023
+- id: ad_form_apprentissage_duree
+  type: choix_unique
+  texte: Durée d’inscription (années)
+  options: *id001
+  horizontal: true
+  obligatoire: false
+  si: *id023
+- id: ad_form_apprentissage_temps
+  type: choix_unique
+  texte: Temps
+  options:
+  - Temps complet
+  - Temps partiel
+  horizontal: true
+  si: &id026
+    question: ad_form_apprentissage_duree
+    egal: *id004
+- id: ad_form_apprentissage_part
+  type: choix_unique
+  texte: Part de la formation effectivement suivie
+  options:
+  - 25 %
+  - 50 %
+  - 75 %
+  - 100 %
+  horizontal: true
+  si: *id026
+- id: info_117
+  texte: '**Autres formations techniques**'
+  type: info
+  si: *id023
+- id: ad_form_techniques_duree
+  type: choix_unique
+  texte: Durée d’inscription (années)
+  options: *id001
+  horizontal: true
+  obligatoire: false
+  si: *id023
+- id: ad_form_techniques_temps
+  type: choix_unique
+  texte: Temps
+  options:
+  - Temps complet
+  - Temps partiel
+  horizontal: true
+  si: &id027
+    question: ad_form_techniques_duree
+    egal: *id004
+- id: ad_form_techniques_part
+  type: choix_unique
+  texte: Part de la formation effectivement suivie
+  options:
+  - 25 %
+  - 50 %
+  - 75 %
+  - 100 %
+  horizontal: true
+  si: *id027
+- id: info_121
+  texte: '**Diplôme universitaire (DEUG, licence)**'
+  type: info
+  si: *id023
+- id: ad_form_licence_duree
+  type: choix_unique
+  texte: Durée d’inscription (années)
+  options: *id001
+  horizontal: true
+  obligatoire: false
+  si: *id023
+- id: ad_form_licence_temps
+  type: choix_unique
+  texte: Temps
+  options:
+  - Temps complet
+  - Temps partiel
+  horizontal: true
+  si: &id028
+    question: ad_form_licence_duree
+    egal: *id004
+- id: ad_form_licence_part
+  type: choix_unique
+  texte: Part de la formation effectivement suivie
+  options:
+  - 25 %
+  - 50 %
+  - 75 %
+  - 100 %
+  horizontal: true
+  si: *id028
+- id: info_125
+  texte: '**Diplôme universitaire (Maîtrise, DEA, DESS, master)**'
+  type: info
+  si: *id023
+- id: ad_form_master_duree
+  type: choix_unique
+  texte: Durée d’inscription (années)
+  options: *id001
+  horizontal: true
+  obligatoire: false
+  si: *id023
+- id: ad_form_master_temps
+  type: choix_unique
+  texte: Temps
+  options:
+  - Temps complet
+  - Temps partiel
+  horizontal: true
+  si: &id029
+    question: ad_form_master_duree
+    egal: *id004
+- id: ad_form_master_part
+  type: choix_unique
+  texte: Part de la formation effectivement suivie
+  options:
+  - 25 %
+  - 50 %
+  - 75 %
+  - 100 %
+  horizontal: true
+  si: *id029
+- id: info_129
+  texte: '**Doctorat**'
+  type: info
+  si: *id023
+- id: ad_form_doctorat_duree
+  type: choix_unique
+  texte: Durée d’inscription (années)
+  options: *id001
+  horizontal: true
+  obligatoire: false
+  si: *id023
+- id: ad_form_doctorat_temps
+  type: choix_unique
+  texte: Temps
+  options:
+  - Temps complet
+  - Temps partiel
+  horizontal: true
+  si: &id030
+    question: ad_form_doctorat_duree
+    egal: *id004
+- id: ad_form_doctorat_part
+  type: choix_unique
+  texte: Part de la formation effectivement suivie
+  options:
+  - 25 %
+  - 50 %
+  - 75 %
+  - 100 %
+  horizontal: true
+  si: *id030
+- id: info_133
+  texte: '**Autres formations diplômantes**'
+  type: info
+  si: *id023
+- id: ad_form_diplomantes_duree
+  type: choix_unique
+  texte: Durée d’inscription (années)
+  options: *id001
+  horizontal: true
+  obligatoire: false
+  si: *id023
+- id: ad_form_diplomantes_temps
+  type: choix_unique
+  texte: Temps
+  options:
+  - Temps complet
+  - Temps partiel
+  horizontal: true
+  si: &id031
+    question: ad_form_diplomantes_duree
+    egal: *id004
+- id: ad_form_diplomantes_part
+  type: choix_unique
+  texte: Part de la formation effectivement suivie
+  options:
+  - 25 %
+  - 50 %
+  - 75 %
+  - 100 %
+  horizontal: true
+  si: *id031
+- id: info_137
+  texte: '**Autres formations**'
+  type: info
+  si: *id023
+- id: ad_form_autres_duree
+  type: choix_unique
+  texte: Durée d’inscription (années)
+  options: *id001
+  horizontal: true
+  obligatoire: false
+  si: *id023
+- id: ad_form_autres_temps
+  type: choix_unique
+  texte: Temps
+  options:
+  - Temps complet
+  - Temps partiel
+  horizontal: true
+  si: &id032
+    question: ad_form_autres_duree
+    egal: *id004
+- id: ad_form_autres_part
+  type: choix_unique
+  texte: Part de la formation effectivement suivie
+  options:
+  - 25 %
+  - 50 %
+  - 75 %
+  - 100 %
+  horizontal: true
+  si: *id032
+- id: ad_form_autres_intitule
+  type: texte_court
+  texte: Intitulé des autres formations
+  obligatoire: false
+  si: *id032
+- id: titre_142
+  texte: Senior – Depuis l’âge de 65 ans
+  type: section
+  si: &id033
+    question: _age
+    sup: 64
+- id: info_143
+  texte: '*Cette partie ne concerne que les personnes de 65 ans ou plus.*'
+  type: info
+  si: *id033
+- id: info_144
+  texte: '**Questions spécifiques**'
+  type: info
+  si: *id033
+- id: se_s1_retraite
+  type: choix_unique
+  texte: SE-S1. Avez-vous pris votre retraite ? Choisissez une seule des options.
+  options:
+  - Oui, pas d’activité actuelle rémunérée
+  - 'Oui, partiellement : travail rémunéré à temps partiel ou occasionnel'
+  - Non, activité actuelle rémunérée à temps plein
+  - Je n’ai jamais eu d’activité rémunérée
+  si: *id033
+- id: se_s1a_age_retraite
+  type: nombre
+  min: 30
+  max: 110
+  texte: SE-S1a. À quel âge avez-vous pris votre retraite ? (ans)
+  si:
+  - *id033
+  - question: se_s1_retraite
+    egal: Oui, pas d’activité actuelle rémunérée
+- id: se_s1b_heures
+  type: nombre
+  min: 0
+  max: 100
+  pas: 0.5
+  texte: SE-S1b. Nombre d’heures de travail rémunéré par semaine
+  si: &id034
+  - *id033
+  - question: se_s1_retraite
+    egal: 'Oui, partiellement : travail rémunéré à temps partiel ou occasionnel'
+- id: se_s1b_intitule
+  type: texte_court
+  texte: Intitulé de l’emploi principal
+  obligatoire: false
+  si: *id034
+- id: se_s1b_categorie
+  type: choix_unique
+  texte: Catégorie professionnelle
+  options: &id036
+  - 1 – Directeurs, cadres de direction et gérants
+  - 2 – Professions intellectuelles et scientifiques (sciences et techniques, informatique, santé, enseignement, justice, culture…)
+  - 3 – Professions intermédiaires (techniciens, inspecteurs, infirmiers et paramédicaux, finance, services juridiques et sociaux…)
+  - 4 – Employés de type administratif (bureau, secrétariat, accueil, comptabilité)
+  - 5 – Services directs aux particuliers, commerçants et vendeurs (vendeurs, coiffeurs, serveurs, aides-soignants, sécurité…)
+  - 6 – Agriculteurs et ouvriers qualifiés de l’agriculture, de la sylviculture et de la pêche
+  - 7 – Métiers qualifiés de l’industrie et de l’artisanat (bâtiment, métallurgie, électricité, imprimerie, habillement…)
+  - 8 – Conducteurs d’installations et de machines, ouvriers de l’assemblage (chauffeurs, conducteurs, mineurs, matelots)
+  - 9 – Professions élémentaires (aides de ménage, agents d’entretien, manœuvres…)
+  - 12 – Professions militaires
+  si: *id034
+- id: se_s1c_heures
+  type: nombre
+  min: 0
+  max: 100
+  pas: 0.5
+  texte: SE-S1c. Nombre d’heures de travail rémunéré par semaine
+  si: &id035
+  - *id033
+  - question: se_s1_retraite
+    egal: Non, activité actuelle rémunérée à temps plein
+- id: se_s1c_intitule
+  type: texte_court
+  texte: Intitulé de l’emploi principal
+  obligatoire: false
+  si: *id035
+- id: se_s1c_categorie
+  type: choix_unique
+  texte: Catégorie professionnelle
+  options: *id036
+  si: *id035
+- id: se_s2_vie
+  type: choix_unique
+  texte: SE-S2. Vivez-vous actuellement… (une seule réponse)
+  options:
+  - Seul(e)
+  - Avec un conjoint
+  - Avec un/une ami(e)
+  - En famille
+  - Autres, précisez
+  si: *id033
+- id: se_s2_autre
+  type: texte_court
+  texte: Précisez
+  si:
+  - *id033
+  - question: se_s2_vie
+    egal: Autres, précisez
+- id: se_s3_club
+  type: choix_unique
+  texte: SE-S3. Êtes-vous actuellement membre actif d’un club ou d’une association ?
+  options:
+  - Non
+  - Oui
+  horizontal: true
+  si: *id033
+- id: se_s3_nombre
+  type: choix_unique
+  texte: Nombre de clubs ou d’associations
+  options: &id037
+  - '1'
+  - '2'
+  - '3'
+  - '4'
+  - '5'
+  - '6'
+  - '7'
+  - 8 ou plus
+  horizontal: true
+  si:
+  - *id033
+  - question: se_s3_club
+    egal: Oui
+- id: se_s4_benevole
+  type: choix_unique
+  texte: SE-S4. Travaillez-vous comme bénévole dans une association caritative ou autre organisation ?
+  options:
+  - Non
+  - Oui
+  horizontal: true
+  si: *id033
+- id: se_s4_nombre
+  type: choix_unique
+  texte: Nombre d’associations ou d’organisations
+  options: *id037
+  horizontal: true
+  si:
+  - *id033
+  - question: se_s4_benevole
+    egal: Oui
+- id: se_s5_sorties
+  type: choix_unique
+  texte: SE-S5. Combien de fois sortez-vous pour rendre visite à un membre de votre famille, un ami ou un groupe d’amis ?
+  options: *id013
+  horizontal: true
+  si: *id033
+- id: se_s6_sorties
+  type: choix_multiple
+  texte: SE-S6. Au cours des deux derniers mois, êtes-vous sorti(e) pour aller ou assister à… ? (cochez les cases correspondantes)
+  options:
+  - Aucune activité
+  - Cinéma
+  - Théâtre
+  - Clubs
+  - Concert/récital
+  - Manifestations exceptionnelles
+  - Danse/Danse de salon
+  - Visite chez des amis
+  - Événements sportifs
+  - Restaurant, salon de thé ou café
+  - Autres, décrivez
+  exclusives:
+  - Aucune activité
+  si: *id033
+- id: se_s6_autre
+  type: texte_court
+  texte: 'Autres sorties : décrivez'
+  si:
+  - *id033
+  - question: se_s6_sorties
+    contient: Autres, décrivez
+- id: se_s7_journee
+  type: choix_multiple
+  texte: SE-S7. Comment passez-vous habituellement votre journée ? Cochez toutes les activités que vous faites dans une journée.
+  options:
+  - Dormir/ne rien faire
+  - Travaux ménagers
+  - Télévision
+  - Radio
+  - Écouter de la musique
+  - Informatique/internet
+  - Courriel-Email
+  - Marcher
+  - Jardiner
+  - Mots croisés, Sudoku
+  - Soins des animaux domestiques
+  - Contacts sociaux
+  - Lire
+  - Écrire
+  - Étudier
+  - Enseigner
+  - Travail bénévole
+  - Travail rémunéré
+  - Jeux stratégiques (échecs, bridge, cartes)
+  - Aider des ami(e)s/la famille
+  - Activités artistiques (dessin, peinture, sculpture, atelier d’écriture, théâtre)
+  - Prières/activités religieuses
+  - Jouer de la musique
+  - Jeux de stimulation cérébrale (ex. sur ordinateur ou Nintendo)
+  - Apprendre quelque chose de nouveau
+  - Activités de loisirs/violons d’Ingres (hobbies)
+  - Activités intellectuelles/professionnelles
+  si: *id033
+- id: se_s8_infos
+  type: choix_multiple
+  texte: SE-S8. Comment vous informez-vous sur les événements nationaux et dans le monde ? Cochez toutes les cases qui conviennent.
+  options:
+  - Aucun moyen particulier de s’informer
+  - Amis
+  - Télévision
+  - Radio
+  - Journaux
+  - Magazines
+  - Internet
+  - Autres sources, décrivez
+  exclusives:
+  - Aucun moyen particulier de s’informer
+  si: *id033
+- id: se_s8_autre
+  type: texte_court
+  texte: 'Autres sources : décrivez'
+  si:
+  - *id033
+  - question: se_s8_infos
+    contient: Autres sources, décrivez
+- id: se_s9_lectures
+  type: choix_multiple
+  texte: SE-S9. Quels types de « documents » lisez-vous régulièrement ? Cochez toutes les cases appropriées.
+  options:
+  - Juste ce qu’il faut pour se « débrouiller »
+  - Articles de journaux
+  - Articles de magazines
+  - Romans
+  - Œuvres de fiction
+  - Journaux ou monographies
+  - Œuvres non-romanesques
+  - Tous ces types de documents
+  - Autres, décrivez
+  si: *id033
+- id: se_s9_autre
+  type: texte_court
+  texte: 'Autres documents : décrivez'
+  si:
+  - *id033
+  - question: se_s9_lectures
+    contient: Autres, décrivez
+- id: info_167
+  texte: "**SE-S10. Combien de temps consacrez-vous habituellement chaque semaine aux sports et aux activités physiques ?**  \n*Indiquez 0 h 0 min si vous n’avez pas ce type d’activité.*"
+  type: info
+  si: *id033
+- id: se_s10_faible_heures
+  type: nombre
+  min: 0
+  max: 100
+  texte: 'Faible (marche, désherbage) : heures par semaine'
+  si: *id033
+- id: se_s10_faible_minutes
+  type: nombre
+  min: 0
+  max: 59
+  texte: 'Faible (marche, désherbage) : minutes'
+  si: *id033
+- id: se_s10_moyenne_heures
+  type: nombre
+  min: 0
+  max: 100
+  texte: 'Moyenne (danse, vélo) : heures par semaine'
+  si: *id033
+- id: se_s10_moyenne_minutes
+  type: nombre
+  min: 0
+  max: 59
+  texte: 'Moyenne (danse, vélo) : minutes'
+  si: *id033
+- id: se_s10_intense_heures
+  type: nombre
+  min: 0
+  max: 100
+  texte: 'Intense (course, squash) : heures par semaine'
+  si: *id033
+- id: se_s10_intense_minutes
+  type: nombre
+  min: 0
+  max: 59
+  texte: 'Intense (course, squash) : minutes'
+  si: *id033
+- id: titre_174
+  texte: Questions générales – depuis 65 ans
+  type: section
+  si: *id033
+- id: se_g1_famille
+  type: choix_unique
+  texte: SE-G1. Combien de fois voyez-vous un membre de votre famille ou un ami au cours de cette période ?
+  options: *id013
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  horizontal: true
+  si: *id033
+- id: se_g2_musique
+  type: choix_unique
+  texte: SE-G2. Combien de fois étudiez-vous ou jouez-vous d’un instrument de musique ?
+  options: *id013
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  horizontal: true
+  si: *id033
+- id: se_g3_art
+  type: choix_unique
+  texte: 'SE-G3. Combien de fois étudiez-vous ou pratiquez-vous des loisirs artistiques (par exemple : dessiner, peindre, écrire, théâtre)'
+  options: *id013
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  horizontal: true
+  si: *id033
+- id: info_178
+  texte: '**SE-G4. Combien de fois faites-vous du sport ou des activités physiques entraînant une dépense d’énergie faible, moyenne ou intense ?**'
+  type: info
+  si: *id033
+- id: se_g4_faible
+  type: choix_unique
+  texte: 'Activités avec dépense d’énergie faible (par exemple : marche, bricolage, jardinage, travaux ménagers, cuisine, pêche, pétanque)'
+  options: *id013
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  horizontal: true
+  si: *id033
+- id: se_g4_moyenne
+  type: choix_unique
+  texte: 'Activités avec dépense d’énergie moyenne (par exemple : danse, golf, tonte de la pelouse, natation de loisir, vélo « facile »)'
+  options: *id013
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  horizontal: true
+  si: *id033
+- id: se_g4_intense
+  type: choix_unique
+  texte: 'Activités avec dépense d’énergie intense (par exemple : course à pied, tennis de compétition, squash, vélo « sportif »)'
+  options: *id013
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  horizontal: true
+  si: *id033
+- id: se_g5_lecture
+  type: choix_unique
+  texte: SE-G5. Combien de fois lisez-vous, quel que soit le document, pendant plus de 20 min ?
+  options: *id013
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  horizontal: true
+  si: *id033
+- id: se_g6_langue
+  type: choix_unique
+  texte: SE-G6. Combien de fois pratiquez-vous une deuxième langue (lecture, écriture, conversation ou cours de langue) ?
+  options: *id013
+  scores:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  horizontal: true
+  si: *id033
+- id: info_184
+  texte: "**SE-G7. Avez-vous voyagé dans un des pays ou continents suivants depuis l’âge de 65 ans ?**  \n*Cochez toutes les cases correspondant à vos voyages.*"
+  type: info
+  si: *id033
+- id: se_g7_voyages
+  type: choix_multiple
+  texte: Pays ou continents visités
+  options:
+  - Aucun
+  - Europe de l’ouest
+  - Europe de l’est/ex URSS
+  - Pays du Maghreb et d’Afrique
+  - Moyen-Orient
+  - Amérique du Nord
+  - Amérique Centrale/latine
+  - Asie
+  - Australie et Iles Pacifiques
+  exclusives:
+  - Aucun
+  si: *id033
+- id: se_g8_loisirs
+  type: texte_court
+  texte: SE-G8. Avez-vous d’autres activités de loisirs, violons d’Ingres (hobbies) ou centres d’intérêt depuis l’âge de 65 ans qui ne sont pas cités dans ce questionnaire ? Si oui, donnez-en la liste (laissez
+    vide sinon)
+  obligatoire: false
+  si: *id033
+- id: se_g9_etudes
+  type: choix_unique
+  texte: SE-G9. Depuis l’âge de 65 ans, avez-vous repris des études ?
+  options:
+  - Non
+  - Oui
+  horizontal: true
+  si: *id033
+- id: info_188
+  texte: Pour chaque formation suivie, renseignez les trois champs (durée, temps, part suivie). Laissez « Aucune » ou vide pour les formations que vous n’avez pas suivies. Si votre situation ne figure pas
+    dans la liste, précisez-la sous « Autres formations ».
+  type: info
+  si: &id038
+  - *id033
+  - question: se_g9_etudes
+    egal: Oui
+- id: info_189
+  texte: '**Emplois de bureau (administration, comptabilité)**'
+  type: info
+  si: *id038
+- id: se_form_bureau_duree
+  type: choix_unique
+  texte: Durée d’inscription (années)
+  options: *id001
+  horizontal: true
+  obligatoire: false
+  si: *id038
+- id: se_form_bureau_temps
+  type: choix_unique
+  texte: Temps
+  options:
+  - Temps complet
+  - Temps partiel
+  horizontal: true
+  si: &id039
+    question: se_form_bureau_duree
+    egal: *id004
+- id: se_form_bureau_part
+  type: choix_unique
+  texte: Part de la formation effectivement suivie
+  options:
+  - 25 %
+  - 50 %
+  - 75 %
+  - 100 %
+  horizontal: true
+  si: *id039
+- id: info_193
+  texte: '**Métiers de la gestion et du commerce**'
+  type: info
+  si: *id038
+- id: se_form_gestion_duree
+  type: choix_unique
+  texte: Durée d’inscription (années)
+  options: *id001
+  horizontal: true
+  obligatoire: false
+  si: *id038
+- id: se_form_gestion_temps
+  type: choix_unique
+  texte: Temps
+  options:
+  - Temps complet
+  - Temps partiel
+  horizontal: true
+  si: &id040
+    question: se_form_gestion_duree
+    egal: *id004
+- id: se_form_gestion_part
+  type: choix_unique
+  texte: Part de la formation effectivement suivie
+  options:
+  - 25 %
+  - 50 %
+  - 75 %
+  - 100 %
+  horizontal: true
+  si: *id040
+- id: info_197
+  texte: '**Apprentissage**'
+  type: info
+  si: *id038
+- id: se_form_apprentissage_duree
+  type: choix_unique
+  texte: Durée d’inscription (années)
+  options: *id001
+  horizontal: true
+  obligatoire: false
+  si: *id038
+- id: se_form_apprentissage_temps
+  type: choix_unique
+  texte: Temps
+  options:
+  - Temps complet
+  - Temps partiel
+  horizontal: true
+  si: &id041
+    question: se_form_apprentissage_duree
+    egal: *id004
+- id: se_form_apprentissage_part
+  type: choix_unique
+  texte: Part de la formation effectivement suivie
+  options:
+  - 25 %
+  - 50 %
+  - 75 %
+  - 100 %
+  horizontal: true
+  si: *id041
+- id: info_201
+  texte: '**Autres formations techniques**'
+  type: info
+  si: *id038
+- id: se_form_techniques_duree
+  type: choix_unique
+  texte: Durée d’inscription (années)
+  options: *id001
+  horizontal: true
+  obligatoire: false
+  si: *id038
+- id: se_form_techniques_temps
+  type: choix_unique
+  texte: Temps
+  options:
+  - Temps complet
+  - Temps partiel
+  horizontal: true
+  si: &id042
+    question: se_form_techniques_duree
+    egal: *id004
+- id: se_form_techniques_part
+  type: choix_unique
+  texte: Part de la formation effectivement suivie
+  options:
+  - 25 %
+  - 50 %
+  - 75 %
+  - 100 %
+  horizontal: true
+  si: *id042
+- id: info_205
+  texte: '**Diplôme universitaire (DEUG, licence)**'
+  type: info
+  si: *id038
+- id: se_form_licence_duree
+  type: choix_unique
+  texte: Durée d’inscription (années)
+  options: *id001
+  horizontal: true
+  obligatoire: false
+  si: *id038
+- id: se_form_licence_temps
+  type: choix_unique
+  texte: Temps
+  options:
+  - Temps complet
+  - Temps partiel
+  horizontal: true
+  si: &id043
+    question: se_form_licence_duree
+    egal: *id004
+- id: se_form_licence_part
+  type: choix_unique
+  texte: Part de la formation effectivement suivie
+  options:
+  - 25 %
+  - 50 %
+  - 75 %
+  - 100 %
+  horizontal: true
+  si: *id043
+- id: info_209
+  texte: '**Diplôme universitaire (Maîtrise, DEA, DESS, master)**'
+  type: info
+  si: *id038
+- id: se_form_master_duree
+  type: choix_unique
+  texte: Durée d’inscription (années)
+  options: *id001
+  horizontal: true
+  obligatoire: false
+  si: *id038
+- id: se_form_master_temps
+  type: choix_unique
+  texte: Temps
+  options:
+  - Temps complet
+  - Temps partiel
+  horizontal: true
+  si: &id044
+    question: se_form_master_duree
+    egal: *id004
+- id: se_form_master_part
+  type: choix_unique
+  texte: Part de la formation effectivement suivie
+  options:
+  - 25 %
+  - 50 %
+  - 75 %
+  - 100 %
+  horizontal: true
+  si: *id044
+- id: info_213
+  texte: '**Doctorat**'
+  type: info
+  si: *id038
+- id: se_form_doctorat_duree
+  type: choix_unique
+  texte: Durée d’inscription (années)
+  options: *id001
+  horizontal: true
+  obligatoire: false
+  si: *id038
+- id: se_form_doctorat_temps
+  type: choix_unique
+  texte: Temps
+  options:
+  - Temps complet
+  - Temps partiel
+  horizontal: true
+  si: &id045
+    question: se_form_doctorat_duree
+    egal: *id004
+- id: se_form_doctorat_part
+  type: choix_unique
+  texte: Part de la formation effectivement suivie
+  options:
+  - 25 %
+  - 50 %
+  - 75 %
+  - 100 %
+  horizontal: true
+  si: *id045
+- id: info_217
+  texte: '**Autres formations diplômantes**'
+  type: info
+  si: *id038
+- id: se_form_diplomantes_duree
+  type: choix_unique
+  texte: Durée d’inscription (années)
+  options: *id001
+  horizontal: true
+  obligatoire: false
+  si: *id038
+- id: se_form_diplomantes_temps
+  type: choix_unique
+  texte: Temps
+  options:
+  - Temps complet
+  - Temps partiel
+  horizontal: true
+  si: &id046
+    question: se_form_diplomantes_duree
+    egal: *id004
+- id: se_form_diplomantes_part
+  type: choix_unique
+  texte: Part de la formation effectivement suivie
+  options:
+  - 25 %
+  - 50 %
+  - 75 %
+  - 100 %
+  horizontal: true
+  si: *id046
+- id: info_221
+  texte: '**Autres formations**'
+  type: info
+  si: *id038
+- id: se_form_autres_duree
+  type: choix_unique
+  texte: Durée d’inscription (années)
+  options: *id001
+  horizontal: true
+  obligatoire: false
+  si: *id038
+- id: se_form_autres_temps
+  type: choix_unique
+  texte: Temps
+  options:
+  - Temps complet
+  - Temps partiel
+  horizontal: true
+  si: &id047
+    question: se_form_autres_duree
+    egal: *id004
+- id: se_form_autres_part
+  type: choix_unique
+  texte: Part de la formation effectivement suivie
+  options:
+  - 25 %
+  - 50 %
+  - 75 %
+  - 100 %
+  horizontal: true
+  si: *id047
+- id: se_form_autres_intitule
+  type: texte_court
+  texte: Intitulé des autres formations
+  obligatoire: false
+  si: *id047

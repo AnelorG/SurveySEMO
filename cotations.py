@@ -1,6 +1,6 @@
 """
-cotations.py : calcul des variables dérivées (scores) du questionnaire RC-EA-EH, d'après les consignes « APPINDEX » / « Cotation »
-du document de référence (version du 27/10/2026). Ce fichier ne contient aucun affichage.
+cotations.py : calcul des variables dérivées (scores) du questionnaire RC-EA-EH, d'après les consignes « Cotation » et « Cotation et normalisation »
+du document de validation (version du 12/11/2026). Ce fichier ne contient aucun affichage.
 Les seuils sont regroupés en tête de chaque bloc pour être modifiés facilement.
 Utilisation : cotations.calculer("mode_de_vie", reponses, age) -> {cle: valeur}  (None si non calculable)
 """
@@ -85,6 +85,7 @@ def ipaq(rep):
     return {"ipaq_intense": _r(mets["intense"]), "ipaq_modere": _r(mets["modere"]), "ipaq_marche": _r(mets["marche"]),
             "ipaq_total": _r(total), "ipaq_niveau": niveau, "ipaq_critere": critere, "ipaq_minutes_semaine": _r(minutes),
             "ipaq_minutes_equivalent_modere": _r(equiv), "ipaq_recommandation_150": None if equiv is None else int(equiv >= 150),
+            "ipaq_pct_repere_150": None if equiv is None else _r(equiv / 150 * 100, 0),
             "assis_min_jour": assis}
 
 
@@ -119,19 +120,23 @@ def psqi(module, rep):
     c7 = _recode_sum(None if None in s7 else sum(s7), [(0, 0), (2, 1), (4, 2), (6, 3)])
     cs = [c1, c2, c3, c4, c5, c6, c7]
     return {"psqi_temps_au_lit_h": _r(au_lit, 2), "psqi_efficacite_pct": _r(eff, 1),
-            **{f"psqi_c{i + 1}": c for i, c in enumerate(cs)}, "psqi_total": None if None in cs else sum(cs)}
+            **{f"psqi_c{i + 1}": c for i, c in enumerate(cs)}, "psqi_total": None if None in cs else sum(cs),
+            "psqi_pct": None if None in cs else _r(sum(cs) / 21 * 100, 0)}
 
 
 # ---------------------------------------------------------------- MEDAS (alimentation) : 14 items, 1 point si le critère est atteint
-# (clé, opérateur, seuil). Seuils tels que dans le document ; ils diffèrent légèrement du MEDAS d'origine pour MV22/23/24/28.
+# (clé, opérateur, seuil). Seuils de la VERSION ORIGINALE du MEDAS (Schröder et al., 2011), tels que dans le document de validation du 12/11/2026.
+#  - MV22 : viande rouge < 1 portion par JOUR ; la question est posée par SEMAINE -> critère atteint si < 7 portions/semaine.
+#  - MV23 (beurre, crème) < 1/jour ; MV24 (boissons sucrées) < 1/jour ; MV28 (pâtisseries) < 3/semaine : inégalités STRICTES.
+#  - MV20 : l'original demande aussi au moins 1 portion de légumes crus ; la question n'étant pas posée séparément, seul le seuil ≥ 2 portions est appliqué.
 MEDAS = [("mv18_huile_principale", "oui", None), ("mv19_huile_cuilleres", ">=", 4), ("mv20_legumes", ">=", 2),
-         ("mv21_fruits", ">=", 3), ("mv22_viande_rouge", "<=", 1), ("mv23_beurre", "<=", 1),
-         ("mv24_boissons_sucrees", "<=", 1), ("mv25_vin", ">=", 7), ("mv26_legumineuses", ">=", 3),
-         ("mv27_poisson", ">=", 3), ("mv28_patisseries", "<=", 3), ("mv29_fruits_coque", ">=", 3),
+         ("mv21_fruits", ">=", 3), ("mv22_viande_rouge", "<", 7), ("mv23_beurre", "<", 1),
+         ("mv24_boissons_sucrees", "<", 1), ("mv25_vin", ">=", 7), ("mv26_legumineuses", ">=", 3),
+         ("mv27_poisson", ">=", 3), ("mv28_patisseries", "<", 3), ("mv29_fruits_coque", ">=", 3),
          ("mv30_volaille", "oui", None), ("mv31_sofrito", ">=", 2)]
-MEDAS_NOMS = ["Huile d’olive principale", "Huile d’olive ≥ 4 c./jour", "Légumes ≥ 2/jour", "Fruits ≥ 3/jour", "Viande rouge limitée",
-              "Beurre/crème limités", "Boissons sucrées limitées", "Vin ≥ 7/semaine", "Légumineuses ≥ 3/sem.", "Poisson ≥ 3/sem.",
-              "Pâtisseries limitées", "Fruits à coque ≥ 3/sem.", "Volaille > viande rouge", "Sauce « sofrito » ≥ 2/sem."]
+MEDAS_NOMS = ["Huile d’olive principale", "Huile d’olive ≥ 4 c./jour", "Légumes ≥ 2/jour", "Fruits ≥ 3/jour", "Viande rouge < 1/jour",
+              "Beurre/crème < 1/jour", "Boissons sucrées < 1/jour", "Vin ≥ 7/semaine", "Légumineuses ≥ 3/sem.", "Poisson ≥ 3/sem.",
+              "Pâtisseries < 3/sem.", "Fruits à coque ≥ 3/sem.", "Volaille > viande rouge", "Sauce « sofrito » ≥ 2/sem."]
 
 
 def medas(rep):
@@ -142,8 +147,9 @@ def medas(rep):
             pts[cle] = None if v not in ("Oui", "Non") else int(v == "Oui")
         else:
             v = _n(rep, cle)
-            pts[cle] = None if v is None else int(v >= seuil if op == ">=" else v <= seuil)
+            pts[cle] = None if v is None else int(v >= seuil if op == ">=" else v < seuil)
     pts["medas_total"] = None if None in pts.values() else sum(pts.values())
+    pts["medas_pct"] = None if pts["medas_total"] is None else _r(pts["medas_total"] / 14 * 100, 0)
     return pts
 
 
@@ -162,7 +168,12 @@ def tabac_alcool(rep, age):
     jours, verres = _n(rep, "mv33_jours_alcool"), _n(rep, "mv34_verres")
     hebdo = 0.0 if jours == 0 else (None if jours is None or verres is None else jours * verres)
     return {"tabac_statut": statut, "tabac_duree_ans": duree, "tabac_paquets_annees": _r(pa),
-            "alcool_jours_semaine": jours, "alcool_verres_par_jour": verres, "alcool_verres_semaine": _r(hebdo)}
+            "alcool_jours_semaine": jours, "alcool_verres_par_jour": verres, "alcool_verres_semaine": _r(hebdo),
+            # repères Santé publique France : au plus 10 verres standards/semaine, au plus 2 par jour, avec des jours sans alcool
+            "alcool_repere_semaine": None if hebdo is None else int(hebdo <= 10),
+            "alcool_repere_jour": 1 if jours == 0 else (None if verres is None else int(verres <= 2)),
+            "alcool_jours_sans": None if jours is None else _r(7 - jours, 0),
+            "alcool_repere_jours_sans": None if jours is None else int(jours < 7)}
 
 
 # ---------------------------------------------------------------- MODULE 2 : réseau social (LSNS-6), HAD-D, antécédents dépressifs
@@ -184,6 +195,8 @@ def exposome_psy(module, rep):
     out["lsns_amis"] = _somme([out[c] for c in LSNS_AMIS])
     out["lsns_total"] = _somme([out["lsns_famille"], out["lsns_amis"]])
     out["had_d_total"] = _somme([out[c] for c in HAD_D])
+    out["lsns_pct"] = None if out["lsns_total"] is None else _r(out["lsns_total"] / 30 * 100, 0)
+    out["had_d_pct"] = None if out["had_d_total"] is None else _r(out["had_d_total"] / 21 * 100, 0)
     dep = {"Non": 0, "Oui": 1}.get(rep.get("psy14_depression"))        # « Je ne sais pas » = manquant
     out["dep_antecedent"] = dep
     oui = dep == 1
@@ -226,6 +239,7 @@ def expositions(module, rep):
             else:
                 out[f"{cle}_duree_annees"] = _n(rep, f"{cle}_annees") if p == 1 else None
         out[f"{groupe}_nombre"] = None if connus[1] else connus[0]            # décompte vide si au moins un item est « Je ne sais pas »
+        out[f"{groupe}_pct"] = None if connus[1] else _r(connus[0] / len(items) * 100, 0)   # % du maximum du bloc
         out[f"{groupe}_nb_nsp"], out[f"{groupe}_nb_connues"] = connus[1], connus[0]
     return out
 
@@ -242,6 +256,7 @@ def _variables_env():
             else:
                 v.append((f"{cle}_duree_annees", f"{court} – {nom} : durée (années)"))
         v += [(f"{groupe}_nombre", f"{court} – nombre d'expositions présentes (vide si une réponse « Je ne sais pas »)"),
+              (f"{groupe}_pct", f"{court} – nombre d'expositions en % du maximum du bloc (indice exploratoire)"),
               (f"{groupe}_nb_nsp", f"{court} – nombre de réponses « Je ne sais pas »"),
               (f"{groupe}_nb_connues", f"{court} – expositions présentes parmi les réponses connues")]
     return v
@@ -316,6 +331,64 @@ def _variables_sante():
         ("thm_age_debut", "Traitement hormonal de la ménopause – âge au début (ans)"), ("thm_duree_mois", "Traitement hormonal de la ménopause – durée (mois)")]
 
 
+# ---------------------------------------------------------------- MODULE 5 : réserve cognitive (QEV / LEQ), sous-score GÉNÉRAL par période
+# Cotation proposée dans le document de validation (12/11/2026) : 7 domaines cotés de 0 à 5 par période, soit 35 au maximum.
+#  G1, G2, G3, G5, G6 : Jamais 0 · Moins d'une fois par mois 1 · Chaque mois 2 · Tous les 15 jours 3 · Chaque semaine 4 · Chaque jour 5.
+#  G4 (activité physique) : valeur MAXIMALE des trois intensités (un seul domaine). Si une intensité manque, le maximum n'est déterminable
+#     que lorsqu'une autre intensité est déjà cotée à 5.
+#  G7 (voyages) : 1 point par zone cochée, plafonné à 5 ; « Aucun » = 0 ; « Aucun » coché avec une zone = réponse à clarifier (manquant).
+#  G8 (autres loisirs) : descriptif, sans points. Une réponse vide reste manquante ; si un domaine ne peut pas être coté, le sous-score est manquant.
+# Les scores SPÉCIFIQUES (études, professions, encadrement, activités sociales...) et le score total LEQ ne sont PAS calculés : le barème de la
+# version française 2011 est « à confirmer » dans le document de validation.
+LEQ_PERIODES = [("ja", "13 à 30 ans"), ("ad", "30 à 65 ans"), ("se", "depuis 65 ans")]
+LEQ_DOMAINES = [("g1_famille", "visites"), ("g2_musique", "musique"), ("g3_art", "loisirs artistiques"), ("g4", "activité physique"),
+                ("g5_lecture", "lecture"), ("g6_langue", "deuxième langue"), ("g7_voyages", "voyages")]
+
+
+def _leq_g4(module, rep, p):
+    vals = [_points(module, rep, f"{p}_g4_{k}") for k in ("faible", "moyenne", "intense")]
+    if 5 in vals:
+        return 5
+    return None if None in vals else max(vals)
+
+
+def _leq_g7(rep, p):
+    v = rep.get(f"{p}_g7_voyages")
+    if not isinstance(v, list) or not v:
+        return None
+    zones = [x for x in v if x != "Aucun"]
+    if "Aucun" in v and zones:
+        return None                                   # incohérent : à clarifier avec le participant
+    return min(len(zones), 5)
+
+
+def reserve_cognitive(module, rep):
+    out, generaux = {}, []
+    for p, _lbl in LEQ_PERIODES:
+        pts = [_points(module, rep, f"{p}_g1_famille"), _points(module, rep, f"{p}_g2_musique"), _points(module, rep, f"{p}_g3_art"),
+               _leq_g4(module, rep, p), _points(module, rep, f"{p}_g5_lecture"), _points(module, rep, f"{p}_g6_langue"), _leq_g7(rep, p)]
+        for (cle, _n), x in zip(LEQ_DOMAINES, pts):
+            out[f"leq_{p}_{cle.split('_')[0]}"] = x
+        total = None if None in pts else sum(pts)
+        out[f"leq_{p}_general"] = total
+        out[f"leq_{p}_general_pct"] = None if total is None else _r(total / 35 * 100, 0)
+        generaux.append(total)
+    out["leq_general_somme"] = None if None in generaux else sum(generaux)          # sur 105, si les trois périodes sont disponibles
+    out["leq_general_somme_pct"] = None if out["leq_general_somme"] is None else _r(out["leq_general_somme"] / 105 * 100, 0)
+    return out
+
+
+def _variables_leq():
+    v = []
+    for p, lbl in LEQ_PERIODES:
+        for (cle, nom), _ in zip(LEQ_DOMAINES, range(7)):
+            v.append((f"leq_{p}_{cle.split('_')[0]}", f"LEQ {lbl} – {cle.split('_')[0].upper()} {nom} (0-5)"))
+        v += [(f"leq_{p}_general", f"LEQ – sous-score général {lbl} (0-35 ; vide si un domaine manque ou si la période ne concerne pas le participant)"),
+              (f"leq_{p}_general_pct", f"LEQ – sous-score général {lbl} en % du maximum (score ÷ 35 × 100)")]
+    return v + [("leq_general_somme", "LEQ – somme des trois sous-scores généraux (0-105 ; vide si une période manque)"),
+                ("leq_general_somme_pct", "LEQ – somme des sous-scores généraux en % du maximum (somme ÷ 105 × 100)")]
+
+
 # ---------------------------------------------------------------- variables (ordre et libellés pour l'export)
 VARIABLES = {"mode_de_vie": (
     [("ipaq_intense", "IPAQ – activité intense (MET-min/semaine, MET = 8)"), ("ipaq_modere", "IPAQ – activité modérée (MET-min/semaine, MET = 4)"),
@@ -323,32 +396,42 @@ VARIABLES = {"mode_de_vie": (
      ("ipaq_niveau", "IPAQ – catégorie d'activité (Craig 2003 : Faible / Modéré / Élevé)"),
      ("ipaq_critere", "IPAQ – critère de la catégorie atteinte"), ("ipaq_minutes_semaine", "Activité physique totale (minutes/semaine, sans pondération)"),
      ("ipaq_minutes_equivalent_modere", "Activité physique (minutes/semaine, activité intense comptée x2)"),
-     ("ipaq_recommandation_150", "Recommandation CDC-ACSM atteinte : ≥ 150 min/semaine (0 = non ; 1 = oui)"), ("assis_min_jour", "Temps assis (minutes/jour, hors total IPAQ)"),
+     ("ipaq_recommandation_150", "Recommandation CDC-ACSM atteinte : ≥ 150 min/semaine (0 = non ; 1 = oui)"),
+     ("ipaq_pct_repere_150", "Activité physique en % du repère de 150 min/semaine (minutes équivalentes ÷ 150 × 100)"), ("assis_min_jour", "Temps assis (minutes/jour, hors total IPAQ)"),
      ("psqi_temps_au_lit_h", "PSQI – temps passé au lit (heures)"), ("psqi_efficacite_pct", "PSQI – efficacité habituelle du sommeil (%)"),
      ("psqi_c1", "PSQI C1 – qualité subjective du sommeil (0-3)"), ("psqi_c2", "PSQI C2 – latence d'endormissement (0-3)"),
      ("psqi_c3", "PSQI C3 – durée du sommeil (0-3)"), ("psqi_c4", "PSQI C4 – efficacité habituelle du sommeil (0-3)"),
      ("psqi_c5", "PSQI C5 – perturbations du sommeil (0-3)"), ("psqi_c6", "PSQI C6 – médicaments pour dormir (0-3)"),
-     ("psqi_c7", "PSQI C7 – dysfonctionnement diurne (0-3)"), ("psqi_total", "PSQI – score global (0-21, plus élevé = sommeil plus altéré)")]
+     ("psqi_c7", "PSQI C7 – dysfonctionnement diurne (0-3)"), ("psqi_total", "PSQI – score global (0-21, plus élevé = sommeil plus altéré)"),
+     ("psqi_pct", "PSQI – score en % du maximum (score ÷ 21 × 100)")]
     + [(c, f"MEDAS – point {c[:4].upper()} ({nom})") for (c, _, _), nom in zip(MEDAS, MEDAS_NOMS)]
     + [("medas_total", "MEDAS – score total (0-14, plus élevé = meilleure adhésion)"),
+       ("medas_pct", "MEDAS – score en % du maximum (score ÷ 14 × 100)"),
        ("tabac_statut", "Tabac – statut (0 = jamais ; 1 = ancien ; 2 = actuel)"), ("tabac_duree_ans", "Tabac – durée (années)"),
        ("tabac_paquets_annees", "Tabac – paquets-années"), ("alcool_jours_semaine", "Alcool – jours de consommation par semaine"),
        ("alcool_verres_par_jour", "Alcool – verres standards par jour de consommation"),
-       ("alcool_verres_semaine", "Alcool – consommation estimée (verres standards/semaine)")]),
+       ("alcool_verres_semaine", "Alcool – consommation estimée (verres standards/semaine)"),
+       ("alcool_repere_semaine", "Alcool – repère Santé publique France : au plus 10 verres/semaine (0 = non ; 1 = oui)"),
+       ("alcool_repere_jour", "Alcool – repère Santé publique France : au plus 2 verres par jour de consommation (0 = non ; 1 = oui)"),
+       ("alcool_jours_sans", "Alcool – jours sans alcool par semaine"),
+       ("alcool_repere_jours_sans", "Alcool – repère Santé publique France : au moins un jour sans alcool par semaine (0 = non ; 1 = oui)")]),
 }
 VARIABLES["exposome_psychosocial"] = (
     [(c, f"LSNS-6 – code {c[:4].upper()} (0-5)") for c in LSNS_FAMILLE + LSNS_AMIS]
     + [("lsns_famille", "LSNS-6 – sous-score famille (0-15)"), ("lsns_amis", "LSNS-6 – sous-score amis (0-15)"),
-       ("lsns_total", "LSNS-6 – score total (0-30, plus élevé = engagement social plus important)")]
+       ("lsns_total", "LSNS-6 – score total (0-30, plus élevé = engagement social plus important)"),
+       ("lsns_pct", "LSNS-6 – score en % du maximum (score ÷ 30 × 100)")]
     + [(c, f"HAD-D – code {c[:5].upper()} (0-3)") for c in HAD_D]
     + [("had_d_total", "HAD-D – score total (0-21, plus élevé = plus de symptômes dépressifs)"),
+       ("had_d_pct", "HAD-D – score en % du maximum (score ÷ 21 × 100)"),
        ("dep_antecedent", "Antécédent de dépression diagnostiquée (0 = non ; 1 = oui)"),
        ("dep_age_premier_episode", "Dépression – âge au premier épisode (ans)"),
        ("dep_recidive", "Dépression – plusieurs épisodes (0 = non ; 1 = oui)"), ("dep_nb_episodes", "Dépression – nombre d'épisodes"),
        ("dep_prise_en_charge", "Dépression – prise en charge (0 = aucune ; 1 = médicament ; 2 = psychothérapie ; 3 = les deux ; 4 = autre)")])
 VARIABLES["expositions_environnementales"] = _variables_env()
 VARIABLES["sante_generale"] = _variables_sante()
-REGISTRE = {"mode_de_vie": "ok", "exposome_psychosocial": "ok", "expositions_environnementales": "ok", "sante_generale": "ok"}
+VARIABLES["reserve_cognitive"] = _variables_leq()
+REGISTRE = {"mode_de_vie": "ok", "exposome_psychosocial": "ok", "expositions_environnementales": "ok", "sante_generale": "ok", "reserve_cognitive": "ok"}
 
 
 def disponible(module_id):
@@ -374,6 +457,8 @@ def calculer(module, rep, age=None):
         v.update(expositions(module, rep))
     elif mid == "sante_generale":
         v.update(sante_generale(module, rep))
+    elif mid == "reserve_cognitive":
+        v.update(reserve_cognitive(module, rep))
     else:
         return {}
     return {cle: v.get(cle) for cle, _ in VARIABLES[mid]}
@@ -399,4 +484,6 @@ def resume(valeurs):
         morceaux.append(f"LSNS-6 {valeurs['lsns_total']}/30")
     if valeurs.get("had_d_total") is not None:
         morceaux.append(f"HAD-D {valeurs['had_d_total']}/21")
+    if valeurs.get("leq_general_somme") is not None:
+        morceaux.append(f"LEQ général {valeurs['leq_general_somme']}/105")
     return " · ".join(morceaux) or None

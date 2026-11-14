@@ -1,5 +1,5 @@
 """
-rendu_html.py : produit le MÊME rapport de synthèse que celui du patient, sous forme d'un document HTML autonome
+rendu_html.py : produit le MÊME rapport de synthèse que celui du participant, sous forme d'un document HTML autonome
 mis en page pour une impression / un enregistrement en PDF au format A4 (graphiques ajustés à la largeur de la page).
 Principe : on rejoue report.afficher_rapport en remplaçant temporairement Streamlit par un « enregistreur » HTML.
 """

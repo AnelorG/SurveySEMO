@@ -1,7 +1,7 @@
 """
-suivi.py : calculs du tableau de bord médecin (aucun affichage ici).
+suivi.py : calculs du tableau de bord investigateur (aucun affichage ici).
 Règles :
-- Seul le DERNIER passage de chaque patient compte pour les statistiques et la valeur affichée.
+- Seul le DERNIER passage de chaque participant compte pour les statistiques et la valeur affichée.
 - Un module est « complet » uniquement si toutes ses questions obligatoires visibles sont renseignées.
 - Pourcentage d'un module partiel = questions obligatoires renseignées / questions obligatoires à renseigner.
 - Si le module définit un bloc « scoring » (voir scoring.py), sa valeur complète est « score/maximum » ;
@@ -50,12 +50,12 @@ def statut_module(m, rep):
     return dict(etat="partiel", pct=pct, texte=f"{pct} %", score=None, resume=None)
 
 
-def analyser(modules, patients, reponses, dates):
-    """Assemble, pour chaque patient, l'historique par module + les statistiques globales."""
+def analyser(modules, participants, reponses, dates):
+    """Assemble, pour chaque participant, l'historique par module + les statistiques globales."""
     suivis = modules_suivis(modules)
     consentements = [m for m in modules if m.get("unique")]
     lignes = []
-    for p in patients:
+    for p in participants:
         par_passage = reponses.get(p["numero"], {})
         passages = sorted(par_passage)
         hist = {m["id"]: [(n, statut_module(m, par_passage[n])) for n in passages] for m in suivis}

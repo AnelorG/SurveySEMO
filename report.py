@@ -533,7 +533,39 @@ def rapport_sante(r, Q, age, m):
     return dict(cartes=cartes, forts=forts, pistes=pistes)
 
 
-REGISTRE = {"parcours_vie": rapport_parcours, "mode_de_vie": rapport_mode_de_vie, "exposome_psychosocial": rapport_exposome_psy, "expositions_environnementales": rapport_expositions, "sante_generale": rapport_sante}
+def rapport_reserve_cognitive(r, Q, age, m):
+    """Module 5 – Réserve cognitive (QEV/LEQ) : sous-scores généraux par période (descriptif, aucun seuil de référence établi)."""
+    forts, pistes, cartes = [], [], []
+    v = cotations.calculer(m, r, age)
+    st.subheader("🧠 Votre réserve cognitive")
+    explication("Le questionnaire <b>QEV / LEQ</b> recense les activités intellectuelles, sociales et de loisirs de votre vie : visites, musique, loisirs artistiques, "
+                "activité physique, lecture, deuxième langue et voyages. Chacun des 7 domaines est noté de 0 à 5 pour chaque période de vie, soit un <b>maximum de 35 par période</b>. "
+                "Un score plus élevé correspond à davantage d’activités mentales variées. Il n’existe <b>pas de seuil de référence</b> : ces chiffres décrivent votre parcours, ils ne constituent pas un diagnostic.")
+    periodes = [(p, lbl) for p, lbl in cotations.LEQ_PERIODES if v[f"leq_{p}_general"] is not None]
+    if not periodes:
+        st.caption("Aucun sous-score n’a pu être calculé à partir de vos réponses.")
+        return dict(cartes=cartes, forts=forts, pistes=pistes)
+    couleurs = {"ja": C["sky"], "ad": C["indigo"], "se": C["violet"]}
+    rangee([carte(f"Activités générales · {lbl}", f"{v[f'leq_{p}_general']} / 35", f"{fmt(v[f'leq_{p}_general_pct'])} % du maximum", couleurs[p], "🧠")
+            for p, lbl in periodes])
+    noms = [n.capitalize() for _, n in cotations.LEQ_DOMAINES]
+    fig = go.Figure()
+    for p, lbl in periodes:
+        vals = [v[f"leq_{p}_{cle.split('_')[0]}"] for cle, _ in cotations.LEQ_DOMAINES]
+        fig.add_trace(go.Bar(name=lbl, x=noms, y=vals, marker=dict(color=couleurs[p], cornerradius=6)))
+    fig.update_layout(barmode="group", title="Vos activités par domaine et par période (0 = jamais, 5 = chaque jour / 5 zones ou plus)",
+                      yaxis=dict(range=[0, 5.6], dtick=1), legend=dict(orientation="h", y=-0.25))
+    st.plotly_chart(style(fig, 360))
+    if v["leq_general_somme"] is not None:
+        rangee([carte("Somme des trois périodes", f"{v['leq_general_somme']} / 105", f"{fmt(v['leq_general_somme_pct'])} % du maximum", C["teal"], "➕")])
+    st.caption("Les autres informations du questionnaire (études, professions, vie associative, formations…) sont conservées pour l’étude : "
+               "leur cotation est en cours de définition et n’apparaît pas encore dans cette synthèse.")
+    cartes.append(carte("Réserve cognitive (LEQ)", f"{v['leq_general_somme']} / 105" if v["leq_general_somme"] is not None else f"{len(periodes)} période(s)",
+                        "activités générales · descriptif", C["violet"], "🧠"))
+    return dict(cartes=cartes, forts=forts, pistes=pistes)
+
+
+REGISTRE = {"parcours_vie": rapport_parcours, "mode_de_vie": rapport_mode_de_vie, "exposome_psychosocial": rapport_exposome_psy, "expositions_environnementales": rapport_expositions, "sante_generale": rapport_sante, "reserve_cognitive": rapport_reserve_cognitive}
 
 
 # ---------------------------------------------------------------- rapport simple (modules sans rapport dédié)
