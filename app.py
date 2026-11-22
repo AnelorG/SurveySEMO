@@ -25,8 +25,7 @@ st.set_page_config(page_title=accueil.TITRE_PAGE, page_icon="🩺", initial_side
 
 
 def _streamlit_assez_recent(minimum=(1, 40)):
-    """Le design (accueil, espace investigateur) demande Streamlit >= 1.40."""
-    """Le design (accueil, espace investigateur) demande Streamlit >= 1.40."""
+    #Le design (accueil, espace investigateur) demande Streamlit >= 1.40."""
     morceaux = tuple(int(x) for x in re.findall(r"\d+", st.__version__)[:2])
     return morceaux >= minimum
 
