@@ -1,5 +1,5 @@
 """
-Crée des patients FICTIFS (noms inventés, réponses aléatoires) pour découvrir le tableau de bord. F5 dans Spyder.
+Crée des participants FICTIFS (noms inventés, réponses aléatoires) pour découvrir le tableau de bord. F5 dans Spyder.
 ⚠️ À utiliser sur une base de TEST uniquement. Pour tout effacer ensuite : reinitialiser_base.py (MODE = "tout").
 """
 import os
@@ -56,7 +56,7 @@ def valeur(q, rng):
 
 
 def remplir(m, rng, partiel=False, age=None):
-    reponses = {}
+    reponses = {"_age": age}  # l'âge conditionne certaines questions (module Réserve cognitive)
     for q in m["questions"]:
         if q["type"] in ("section", "info"):
             continue
@@ -70,7 +70,7 @@ def remplir(m, rng, partiel=False, age=None):
 
 
 def creer(confirmer=True):
-    if confirmer and input(f"Ajouter {len(PATIENTS)} patients FICTIFS à la base ? Tapez OUI : ").strip() != "OUI":
+    if confirmer and input(f"Ajouter {len(PATIENTS)} participants FICTIFS à la base ? Tapez OUI : ").strip() != "OUI":
         print("Annulé.")
         return
     db.init_db()
@@ -97,7 +97,7 @@ def creer(confirmer=True):
             for m in modules:
                 if m["id"] in courant:
                     db.sauver_reponses(numero, m["id"], courant[m["id"]], p)
-    print(f"{len(PATIENTS)} patients fictifs créés.")
+    print(f"{len(PATIENTS)} participants fictifs créés.")
 
 
 if __name__ == "__main__":

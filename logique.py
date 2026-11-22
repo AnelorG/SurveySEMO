@@ -1,5 +1,5 @@
 """
-logique.py : règles communes à l'application patient et à l'espace médecin
+logique.py : règles communes à l'application participant et à l'espace investigateur
 (lecture des modules, questions visibles, questions obligatoires manquantes...).
 """
 import glob
@@ -32,11 +32,7 @@ def est_manquante(q, v):
     return est_vide(v)
 
 
-def est_visible(q, saisies):
-    """Question conditionnelle : 'si: {question: id, egal: valeur}', '{... rempli: true}', '{... sup: 0}' (nombre > 0) ou '{... contient: option}' (choix multiples)."""
-    cond = q.get("si")
-    if not cond:
-        return True
+def _condition_ok(cond, saisies):
     v = saisies.get(cond["question"])
     if "egal" in cond:
         attendues = cond["egal"] if isinstance(cond["egal"], list) else [cond["egal"]]
@@ -48,6 +44,17 @@ def est_visible(q, saisies):
     if cond.get("rempli"):
         return not est_vide(v)
     return True
+
+
+def est_visible(q, saisies):
+    """Question conditionnelle : 'si: {question: id, egal: valeur}', '{... rempli: true}', '{... sup: 0}' (nombre > 0) ou '{... contient: option}' (choix multiples).
+    'si' peut aussi être une LISTE de conditions (toutes doivent être vraies). `question: _age` désigne l'âge du participant."""
+    cond = q.get("si")
+    if not cond:
+        return True
+    if isinstance(cond, list):
+        return all(_condition_ok(c, saisies) for c in cond)
+    return _condition_ok(cond, saisies)
 
 
 def premiere_etape(modules, reponses):

@@ -1,5 +1,5 @@
 # MODULE 4 – SANTÉ GÉNÉRALE ET ANTÉCÉDENTS MÉDICAUX   (questionnaire RC-EA-EH, version du 27/10/2026)
-# Données SENSIBLES (santé, VIH) : le rapport patient n'en reprend qu'une partie (voir report.py) ; tout est dans l'export.
+# Données SENSIBLES (santé, VIH) : le rapport participant n'en reprend qu'une partie (voir report.py) ; tout est dans l'export.
 # exclusives: réponses à choisir seules (sans autre case cochée). Conditions : voir la liste en tête du module 1.
 id: sante_generale
 titre: Module 4 – Santé générale et antécédents médicaux

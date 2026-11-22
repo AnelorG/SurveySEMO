@@ -1,7 +1,7 @@
 """
-export_excel.py : export Excel complet des données, depuis l'espace médecin.
-Nom du fichier : JJ_MM_AAAA_HH_MM_SS_Export_listing_patient_CMRR_CHUGA.xlsx
-Feuilles : Listing patients · Scores et complétion · Réponses par passage · Réponses format long ·
+export_excel.py : export Excel complet des données, depuis l'espace investigateur.
+Nom du fichier : JJ_MM_AAAA_HH_MM_SS_Export_listing_participant_CMRR_CHUGA.xlsx
+Feuilles : Listing participants · Scores et complétion · Réponses par passage · Réponses format long ·
            Dictionnaire variables · Informations.
 ⚠️ Le fichier contient des données NOMINATIVES et de santé.
 """
@@ -17,7 +17,7 @@ import db
 import logique
 import suivi
 
-NOM_BASE = "Export_listing_patient_CMRR_CHUGA"
+NOM_BASE = "Export_listing_participant_CMRR_CHUGA"
 MIME = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 TYPES = {"nombre": "Nombre", "texte_court": "Texte court", "texte_libre": "Texte libre", "oui_non": "Oui / Non",
          "choix_unique": "Choix unique", "choix_multiple": "Choix multiple", "case_a_cocher": "Case à cocher"}
@@ -30,7 +30,7 @@ DATE, DATE_HEURE = "dd/mm/yyyy", "dd/mm/yyyy hh:mm"
 
 
 def nom_fichier(t=None):
-    """Ex. 22_10_2026_14_35_07_Export_listing_patient_CMRR_CHUGA.xlsx"""
+    """Ex. 22_10_2026_14_35_07_Export_listing_participant_CMRR_CHUGA.xlsx"""
     return f"{(t or datetime.now()):%d_%m_%Y_%H_%M_%S}_{NOM_BASE}.xlsx"
 
 
@@ -86,25 +86,34 @@ def _ecrire(wb, nom, couleur_onglet, entetes, lignes, largeurs, figer, formats=N
     return ws
 
 
+def _une_condition(c):
+    if c["question"] == "_age":
+        return f"âge du participant > {c['sup']}" if "sup" in c else "âge du participant"
+    if "egal" in c:
+        v = c["egal"] if isinstance(c["egal"], list) else [c["egal"]]
+        return f"« {c['question']} » = " + " ou ".join(str(x) for x in v)
+    if "contient" in c:
+        return f"« {c['question']} » contient « {c['contient']} »"
+    if "sup" in c:
+        return f"« {c['question']} » > {c['sup']}"
+    return f"« {c['question']} » est renseignée"
+
+
 def _condition(q):
     c = q.get("si")
     if not c:
         return "Toujours affichée"
-    if "egal" in c:
-        v = c["egal"] if isinstance(c["egal"], list) else [c["egal"]]
-        return f"Affichée si « {c['question']} » = " + " ou ".join(str(x) for x in v)
-    if "sup" in c:
-        return f"Affichée si « {c['question']} » > {c['sup']}"
-    return f"Affichée si « {c['question']} » est renseignée"
+    conds = c if isinstance(c, list) else [c]
+    return "Affichée si " + " ET ".join(_une_condition(x) for x in conds)
 
 
 def construire(modules, maintenant=None):
     """Retourne le fichier Excel (octets)."""
     maintenant = maintenant or datetime.now()
-    patients, reponses = db.lister_patients(), db.toutes_reponses()
+    participants, reponses = db.lister_patients(), db.toutes_reponses()
     details, tentatives = db.dates_detaillees(), db.tentatives_connexion()
     dates = {n: {p: max(d2 for _, d2 in mods.values()) for p, mods in ps.items()} for n, ps in details.items()}
-    an = suivi.analyser(modules, patients, reponses, dates)
+    an = suivi.analyser(modules, participants, reponses, dates)
     suivis = an["suivis"]
     consent_ids = [m["id"] for m in modules if m.get("unique")]
     consent_mods = [m for m in modules if m.get("unique")]
@@ -115,7 +124,7 @@ def construire(modules, maintenant=None):
     wb = Workbook()
     wb.remove(wb.active)
 
-    # ------------------------------------------------ 1) Listing patients
+    # ------------------------------------------------ 1) Listing participants
     en = ["N° de randomisation", "Groupe (TEST / CONTROL)", "Nom", "Prénom", "Date de naissance",
           "Âge à la date de l'export (ans)", "Date d'inclusion", "Mode d'inclusion", "Consentement donné",
           "Date du consentement", "Statut du questionnaire (dernier passage)", "Parties complétées (nombre)",
@@ -140,7 +149,7 @@ def construire(modules, maintenant=None):
         complets = sum(1 for s in l["dernier"].values() if s["etat"] == "complet")
         ech = tentatives.get(num, 0)
         ligne = [num, l["groupe"], l["nom"] or None, l["prenom"] or None, _dt(l["naissance"]), _age(l["naissance"], maintenant),
-                 _dt(l["inclusion"]), {"formulaire": "Espace médecin", "excel": "Import Excel"}.get(l["source"], l["source"] or None),
+                 _dt(l["inclusion"]), {"formulaire": "Espace investigateur", "espace médecin": "Espace investigateur", "excel": "Import Excel"}.get(l["source"], l["source"] or None),
                  "Oui" if l["consent"] else "Non", _dt(d_consent), STATUTS[l["statut"]], complets, len(suivis),
                  round(l["pct_complets"], 1), len(l["passages"]), _dt(d_debut), _dt(l["derniere_activite"]), ech,
                  "Oui" if ech >= db.MAX_TENTATIVES else "Non", nb_suivi.get(num, 0), nb_ei.get(num, 0)]
@@ -157,15 +166,15 @@ def construire(modules, maintenant=None):
     for m in suivis:
         statuts.add(pos)
         pos += 6 if m.get("scoring") else 3
-    _ecrire(wb, "Listing patients", "0B5CAD", en, lignes, [16, 14, 18, 18, 14, 14, 14, 16, 13, 17, 20, 13, 13, 13, 11, 17, 17, 14, 14, 13, 16] + [26, 22, 44, 14, 14, 42] * len(suivis),
+    _ecrire(wb, "Listing participants", "0B5CAD", en, lignes, [16, 14, 18, 18, 14, 14, 14, 16, 13, 17, 20, 13, 13, 13, 11, 17, 17, 14, 14, 13, 16] + [26, 22, 44, 14, 14, 42] * len(suivis),
             "C2", formats, fonds, statuts, hauteur=115)
 
-    # ------------------------------------------------ 2) Scores et complétion (1 ligne = patient x passage x partie)
+    # ------------------------------------------------ 2) Scores et complétion (1 ligne = participant x passage x partie)
     en2 = ["N° de randomisation", "Groupe (TEST / CONTROL)", "Passage n°", "Partie", "Date de dernière saisie de la partie",
            "Statut de la partie", "Complétion (%)", "Valeur affichée dans le tableau de bord", "Score obtenu", "Score maximum",
            "Interprétation du score"]
     l2 = []
-    for p in patients:
+    for p in participants:
         num = p["numero"]
         for n in sorted(reponses.get(num, {})):
             for m in suivis:
@@ -188,7 +197,7 @@ def construire(modules, maintenant=None):
                 en_c.append(f"[{court}] {lib}")
                 fonds_c.append(COULEURS_PARTIES[k % len(COULEURS_PARTIES)])
         lc = []
-        for p in patients:
+        for p in participants:
             num = p["numero"]
             for n in sorted(reponses.get(num, {})):
                 rep = reponses[num][n]
@@ -218,7 +227,7 @@ def construire(modules, maintenant=None):
             fonds3.append(col)
             colonnes.append((m, q))
     l3 = []
-    for p in patients:
+    for p in participants:
         num = p["numero"]
         for n in sorted(reponses.get(num, {})):
             rep = reponses[num][n]
@@ -239,7 +248,7 @@ def construire(modules, maintenant=None):
     en4 = ["N° de randomisation", "Groupe (TEST / CONTROL)", "Passage n°", "Partie", "Date de saisie de la partie",
            "Identifiant de la question", "Libellé de la question", "Type de question", "Réponse", "Réponse (valeur numérique)"]
     l4 = []
-    for p in patients:
+    for p in participants:
         num = p["numero"]
         for n in sorted(reponses.get(num, {})):
             rep = reponses[num][n]
@@ -300,24 +309,24 @@ def construire(modules, maintenant=None):
     infos = [
         ("Fichier", nom_fichier(maintenant)),
         ("Généré le", f"{maintenant:%d/%m/%Y à %H:%M:%S}"),
-        ("Patients inclus", len(patients)),
-        ("Passages enregistrés (tous patients)", n_pass),
+        ("Participants inclus", len(participants)),
+        ("Passages enregistrés (tous participants)", n_pass),
         ("Parties suivies", len(suivis)),
         ("⚠️ Confidentialité", "Ce fichier contient des données NOMINATIVES (nom, prénom, date de naissance) et des données de santé. "
                               "À conserver uniquement sur un poste ou serveur sécurisé, sans transmission par e-mail non chiffré."),
-        ("Feuille « Listing patients »", "1 ligne par patient : identité, groupe, consentement, avancement et état de chaque partie (dernier passage + historique)."),
-        ("Feuille « Scores calculés »", "Variables dérivées du questionnaire (IPAQ, PSQI C1-C7, MEDAS, paquets-années, alcool…), 1 ligne par patient et par passage ; cellule vide = non calculable."),
-        ("Feuille « Scores et complétion »", "1 ligne par patient, par passage et par partie : statut, complétion (%) et score éventuel."),
-        ("Feuille « Réponses par passage »", "1 ligne par patient et par passage ; 1 colonne par question (en-tête : [Partie] identifiant — libellé)."),
-        ("Feuille « Réponses format long »", "1 ligne par réponse (patient × passage × question) : pratique pour R, Python, SPSS, tableaux croisés."),
-        ("Feuille « Suivi et événements »", "Effets indésirables, remarques liées à l'essai, plaintes, conditions de complétion et autres informations saisies par les médecins."),
-        ("Feuille « Journal d'audit »", "Traçabilité : créations, modifications, ajouts de suivi, déblocages, exports et suppressions (date, utilisateur, action). Un patient supprimé n'y laisse que son numéro, la date et le motif."),
-        ("Patients supprimés", "Ils n'apparaissent dans aucune autre feuille ; leurs numéros ne sont jamais réattribués."),
+        ("Feuille « Listing participants »", "1 ligne par participant : identité, groupe, consentement, avancement et état de chaque partie (dernier passage + historique)."),
+        ("Feuille « Scores calculés »", "Variables dérivées du questionnaire (IPAQ, PSQI C1-C7, MEDAS, paquets-années, alcool…), 1 ligne par participant et par passage ; cellule vide = non calculable."),
+        ("Feuille « Scores et complétion »", "1 ligne par participant, par passage et par partie : statut, complétion (%) et score éventuel."),
+        ("Feuille « Réponses par passage »", "1 ligne par participant et par passage ; 1 colonne par question (en-tête : [Partie] identifiant — libellé)."),
+        ("Feuille « Réponses format long »", "1 ligne par réponse (participant × passage × question) : pratique pour R, Python, SPSS, tableaux croisés."),
+        ("Feuille « Suivi et événements »", "Effets indésirables, remarques liées à l'essai, plaintes, conditions de complétion et autres informations saisies par les investigateurs."),
+        ("Feuille « Journal d'audit »", "Traçabilité : créations, modifications, ajouts de suivi, déblocages, exports et suppressions (date, utilisateur, action). Un participant supprimé n'y laisse que son numéro, la date et le motif."),
+        ("Participants supprimés", "Ils n'apparaissent dans aucune autre feuille ; leurs numéros ne sont jamais réattribués."),
         ("Feuille « Dictionnaire variables »", "Liste de toutes les questions : identifiant, libellé, type, options, score, caractère obligatoire, condition d'affichage."),
         ("Définition : partie complète", "Toutes les questions obligatoires visibles sont renseignées. Une partie partiellement remplie n'est PAS complète."),
         ("Définition : complétion (%)", "Pour une partie incomplète : questions obligatoires renseignées / questions obligatoires à renseigner ; 0 % si non démarrée."),
         ("Définition : score", "Calculé uniquement pour les parties qui définissent une règle de score ; sinon une partie complète est notée 100 %."),
-        ("Définition : dernier passage", "Statuts, statistiques et valeurs du listing = dernier passage de chaque patient. L'historique complet est dans les autres feuilles."),
+        ("Définition : dernier passage", "Statuts, statistiques et valeurs du listing = dernier passage de chaque participant. L'historique complet est dans les autres feuilles."),
         ("Parties non repassées", "Lors d'un nouveau passage partiel, les parties non repassées sont recopiées avec leur date de saisie d'origine."),
         ("Groupe", "Numéro P000 inférieur à 500 : TEST ; 500 et plus : CONTROL."),
         ("Cellules vides", "Question non posée (condition d'affichage non remplie) ou sans réponse. Choix multiples séparés par « ; »."),

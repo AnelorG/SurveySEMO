@@ -1,5 +1,5 @@
 """
-admin.py : espace médecin (connexion, tableau de bord, dossier patient, ajout de patient).
+admin.py : espace investigateur (connexion, tableau de bord, dossier participant, ajout de participant).
 Identifiants provisoires : voir ADMIN_LOGIN / ADMIN_MOT_DE_PASSE dans config.py.
 """
 import hmac
@@ -87,7 +87,7 @@ def _age(iso):
 
 
 def _utilisateur():
-    return st.session_state.get("med_utilisateur", "médecin")
+    return st.session_state.get("med_utilisateur", "investigateur")
 
 
 def _court(m):
@@ -106,7 +106,7 @@ def _donnees(modules):
 def _connexion(aller):
     _, centre, _ = st.columns([1, 2, 1])
     with centre:
-        st.markdown(accueil.entete_connexion("Espace médecin", "Connectez-vous pour accéder au tableau de bord."),
+        st.markdown(accueil.entete_connexion("Espace investigateur", "Connectez-vous pour accéder au tableau de bord."),
                     unsafe_allow_html=True)
         with st.form("login_medecin"):
             identifiant = st.text_input("Identifiant")
@@ -124,14 +124,14 @@ def _connexion(aller):
             aller("accueil")
 
 
-# ------------------------------------------------------------------ ajout d'un patient
-@st.dialog("Ajouter un nouveau patient")
+# ------------------------------------------------------------------ ajout d'un participant
+@st.dialog("Ajouter un nouveau participant")
 def dialogue_ajout():
     fait = st.session_state.get("aj_fait")
     if fait:
         numero, groupe, naissance = fait
-        st.success("Patient enregistré.")
-        st.markdown(f'<div class="de">{numero}</div>' f'<p class="note">Groupe {_badge_groupe(groupe)} · à remettre au patient avec sa '
+        st.success("Participant enregistré.")
+        st.markdown(f'<div class="de">{numero}</div>' f'<p class="note">Groupe {_badge_groupe(groupe)} · à remettre au participant avec sa '
                     f'date de naissance ({_date_fr(naissance)}) pour qu’il se connecte.</p>', unsafe_allow_html=True)
         if st.button("Fermer", type="primary", key="aj_fermer"):
             st.session_state.pop("aj_fait", None)
@@ -150,7 +150,7 @@ def dialogue_ajout():
         c2.markdown(f'<span class="de">{numero}</span> &nbsp; {_badge_groupe(db.groupe_pour(numero))}', unsafe_allow_html=True)
     else:
         c2.markdown('<span class="note">Cliquez sur le dé pour tirer un numéro.</span>', unsafe_allow_html=True)
-    if st.button("Enregistrer le patient", type="primary", disabled=not (naissance and numero), key="aj_save"):
+    if st.button("Enregistrer le participant", type="primary", disabled=not (naissance and numero), key="aj_save"):
         if db.ajouter_patient(numero, nom.strip(), prenom.strip(), naissance, _utilisateur()):
             st.session_state["aj_fait"] = (numero, db.groupe_pour(numero), naissance.isoformat())
             st.session_state.pop("aj_numero", None)
@@ -165,8 +165,8 @@ def dialogue_ajout():
 def dialogue_export():
     n_pat = len(db.lister_patients())
     n_pass = sum(len(v) for v in db.toutes_reponses().values())
-    st.markdown(f"Fichier Excel complet : **{n_pat} patient(s)**, **{n_pass} passage(s)**.")
-    st.markdown('<p class="note">9 feuilles : listing des patients · scores et complétion · réponses par passage · '
+    st.markdown(f"Fichier Excel complet : **{n_pat} participant(s)**, **{n_pass} passage(s)**.")
+    st.markdown('<p class="note">9 feuilles : listing des participants · scores et complétion · réponses par passage · '
                 'scores calculés · réponses au format long · suivi et événements · journal d’audit · dictionnaire des variables · informations.</p>', unsafe_allow_html=True)
     st.warning("Ce fichier contient des données **nominatives** et de santé : conservez-le sur un poste ou un serveur sécurisé "
                "et ne l’envoyez pas par e-mail non chiffré.")
@@ -185,17 +185,17 @@ def dialogue_export():
 def _barre_laterale(aller):
     with st.sidebar:
         st.markdown(accueil.logo_html(64), unsafe_allow_html=True)
-        st.markdown('<p class="note" style="margin:.6rem 0 1rem">Espace médecin</p>', unsafe_allow_html=True)
+        st.markdown('<p class="note" style="margin:.6rem 0 1rem">Espace investigateur</p>', unsafe_allow_html=True)
         if st.button("📊  Tableau de bord", key="nav_tableau"):
             st.session_state["med_dossier"] = None
             st.session_state["med_vue"] = None
             st.rerun()
         st.markdown("<div style='height:.8rem'></div>", unsafe_allow_html=True)
-        if st.button("➕  Ajouter un nouveau patient", key="btn_ajout"):
+        if st.button("➕  Ajouter un nouveau participant", key="btn_ajout"):
             for k in ("aj_fait", "aj_numero", "aj_nom", "aj_prenom", "aj_naiss"):
                 st.session_state.pop(k, None)
             dialogue_ajout()
-        if st.button("✏️  Modifier un patient", key="btn_modif"):
+        if st.button("✏️  Modifier un participant", key="btn_modif"):
             _ouvrir_modification(st.session_state.get("med_dossier"))
         if st.button("📤  Exporter les données", key="btn_export"):
             st.session_state.pop("exp_fichier", None)
@@ -218,7 +218,7 @@ def _g_groupes(an):
     nt, nc = an["par_groupe"]["TEST"]["n"], an["par_groupe"]["CONTROL"]["n"]
     fig = go.Figure(go.Pie(labels=["TEST", "CONTROL"], values=[nt, nc], hole=.7, sort=False, textinfo="label+value",
                            marker=dict(colors=[C["sky"], C["violet"]], line=dict(color="#fff", width=4))))
-    fig.add_annotation(text=f"<b>{an['n']}</b><br><span style='font-size:13px'>patients</span>", showarrow=False, font=dict(size=30))
+    fig.add_annotation(text=f"<b>{an['n']}</b><br><span style='font-size:13px'>participants</span>", showarrow=False, font=dict(size=30))
     fig.update_layout(showlegend=False, title="Répartition des groupes")
     return report.style(fig, 320)
 
@@ -229,7 +229,7 @@ def _g_statuts(an):
                         ("Non démarré", an["n_non_demarre"], "#94a3b8")):
         fig.add_trace(go.Bar(y=[""], x=[n], orientation="h", name=lab, marker=dict(color=col, cornerradius=10),
                              text=[n if n else ""], textposition="inside", textfont=dict(color="#fff", size=16)))
-    fig.update_layout(barmode="stack", title="Avancement des patients", legend=dict(orientation="h", y=-0.25, traceorder="normal"),
+    fig.update_layout(barmode="stack", title="Avancement des participants", legend=dict(orientation="h", y=-0.25, traceorder="normal"),
                       xaxis=dict(visible=False), yaxis=dict(visible=False))
     return report.style(fig, 190)
 
@@ -241,7 +241,7 @@ def _g_modules(an, modules):
         x=vals, y=[_court(m) for m in mods], orientation="h", text=[f"{v:.0f} %" for v in vals], textposition="outside",
         cliponaxis=False, marker=dict(color=vals, cmin=0, cmax=100, cornerradius=10,
                                       colorscale=[[0, "#fda4af"], [.5, "#fcd34d"], [1, "#34d399"]])))
-    fig.update_layout(title="Patients ayant complété chaque partie", xaxis=dict(range=[0, 112], ticksuffix=" %"))
+    fig.update_layout(title="Participants ayant complété chaque partie", xaxis=dict(range=[0, 112], ticksuffix=" %"))
     fig.update_yaxes(autorange="reversed")
     return report.style(fig, 120 + 56 * len(mods))
 
@@ -256,7 +256,7 @@ def _g_patients(an):
         ls = [l for l in an["lignes"] if l["groupe"] == g]
         fig.add_trace(go.Bar(x=[l["numero"] for l in ls], y=[l["pct_complets"] for l in ls], name=g,
                              marker=dict(color=col, cornerradius=8)))
-    fig.update_layout(title=f"Parties complétées par patient · moyenne {an['moyenne']:.0f} % ± {an['sd']:.0f} (zone ombrée)", yaxis=dict(range=[0, 105], ticksuffix=" %"),
+    fig.update_layout(title=f"Parties complétées par participant · moyenne {an['moyenne']:.0f} % ± {an['sd']:.0f} (zone ombrée)", yaxis=dict(range=[0, 105], ticksuffix=" %"),
                       legend=dict(orientation="h", y=-0.2), barmode="group")
     return report.style(fig, 360)
 
@@ -267,16 +267,16 @@ def _tableau_de_bord(modules):
     st.markdown('<div class="med-titre">Tableau de bord</div>'
                 f'<p class="med-sous">Mis à jour le {datetime.now():%d/%m/%Y à %H:%M}</p>', unsafe_allow_html=True)
     if an["n"] == 0:
-        st.info("Aucun patient inclus pour l’instant. Utilisez « Ajouter un nouveau patient » dans le menu de gauche.")
+        st.info("Aucun participant inclus pour l’instant. Utilisez « Ajouter un nouveau participant » dans le menu de gauche.")
         return
 
     st.markdown('<div class="section">👥 Inclusion</div>', unsafe_allow_html=True)
     pg = an["par_groupe"]
     report.rangee([
-        report.carte("Patients inclus", an["n"], icone="👥", couleur=C["indigo"]),
+        report.carte("Participants inclus", an["n"], icone="👥", couleur=C["indigo"]),
         report.carte("Groupe TEST", pg["TEST"]["n"], icone="🧪", couleur=C["sky"]),
         report.carte("Groupe CONTROL", pg["CONTROL"]["n"], icone="⚖️", couleur=C["violet"]),
-        report.carte("Questionnaire terminé", f"{an['n_termine']} / {an['n']}", f"{100 * an['n_termine'] / an['n']:.0f} % des patients",
+        report.carte("Questionnaire terminé", f"{an['n_termine']} / {an['n']}", f"{100 * an['n_termine'] / an['n']:.0f} % des participants",
                      icone="✅", couleur=C["green"]),
         report.carte("Ont repassé le test", an["n_repasses"], icone="🔁", couleur=C["teal"]),
     ])
@@ -286,23 +286,23 @@ def _tableau_de_bord(modules):
 
     st.markdown('<div class="section">📈 Complétion des questionnaires</div>', unsafe_allow_html=True)
     st.markdown('<p class="note">Un module compte comme complété seulement si <b>toutes</b> ses questions obligatoires sont '
-                'renseignées (un module partiel n’est pas complété). Calculs sur le <b>dernier passage</b> de chaque patient.</p>',
+                'renseignées (un module partiel n’est pas complété). Calculs sur le <b>dernier passage</b> de chaque participant.</p>',
                 unsafe_allow_html=True)
     report.rangee([
-        report.carte("Parties complétées · tous patients", f"{an['moyenne']:.0f} % ± {an['sd']:.0f}", "moyenne ± écart type entre patients",
+        report.carte("Parties complétées · tous participants", f"{an['moyenne']:.0f} % ± {an['sd']:.0f}", "moyenne ± écart type entre participants",
                      icone="🎯", couleur=C["indigo"]),
         report.carte("Parties complétées · par module", f"{an['module_moyenne']:.0f} % ± {an['module_sd']:.0f}",
                      "moyenne ± écart type entre modules", icone="🧩", couleur=C["teal"]),
-        report.carte("Groupe TEST", f"{pg['TEST']['moyenne']:.0f} % ± {pg['TEST']['sd']:.0f}", f"{pg['TEST']['n']} patients",
+        report.carte("Groupe TEST", f"{pg['TEST']['moyenne']:.0f} % ± {pg['TEST']['sd']:.0f}", f"{pg['TEST']['n']} participants",
                      icone="🧪", couleur=C["sky"]),
-        report.carte("Groupe CONTROL", f"{pg['CONTROL']['moyenne']:.0f} % ± {pg['CONTROL']['sd']:.0f}", f"{pg['CONTROL']['n']} patients",
+        report.carte("Groupe CONTROL", f"{pg['CONTROL']['moyenne']:.0f} % ± {pg['CONTROL']['sd']:.0f}", f"{pg['CONTROL']['n']} participants",
                      icone="⚖️", couleur=C["violet"]),
     ])
     c1, c2 = st.columns(2, gap="large")
     c1.plotly_chart(_g_modules(an, modules))
     c2.plotly_chart(_g_patients(an))
 
-    st.markdown('<div class="section">📋 Patients</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section">📋 Participants</div>', unsafe_allow_html=True)
     st.markdown('<p class="note">Survolez un score pour voir l’historique des passages. Cliquez sur un numéro pour ouvrir le dossier. '
                 'Sans règle de score définie pour un module, une partie complète s’affiche « 100 % ».</p>', unsafe_allow_html=True)
     _tableau_patients(an)
@@ -342,20 +342,20 @@ def _tableau_patients(an):
                 col.markdown(_chip(l, m), unsafe_allow_html=True)
             cols[-1].markdown(f'<div class="cell">{"✔" if l["consent"] else "—"}</div>', unsafe_allow_html=True)
     if not lignes:
-        _vide("Aucun patient ne correspond à la recherche.")
+        _vide("Aucun participant ne correspond à la recherche.")
     if pages > 1:
         p1, p2, p3 = st.columns([1, 2, 1], vertical_alignment="center")
         if p1.button("‹ Précédent", disabled=page == 0, key="pg_prec"):
             st.session_state["med_page"] = page - 1
             st.rerun()
-        p2.markdown(f'<p class="note" style="text-align:center;margin:0">Page {page + 1} / {pages} · {len(lignes)} patients</p>',
+        p2.markdown(f'<p class="note" style="text-align:center;margin:0">Page {page + 1} / {pages} · {len(lignes)} participants</p>',
                     unsafe_allow_html=True)
         if p3.button("Suivant ›", disabled=page >= pages - 1, key="pg_suiv"):
             st.session_state["med_page"] = page + 1
             st.rerun()
 
 
-# ------------------------------------------------------------------ dossier d'un patient
+# ------------------------------------------------------------------ dossier d'un participant
 def _fmt(v):
     if v is None or v == "" or v == []:
         return "—"
@@ -378,7 +378,7 @@ def _dossier(modules, numero):
     if b1.button("← Retour au tableau de bord", key="med_retour"):
         st.session_state["med_dossier"] = None
         st.rerun()
-    if b2.button("✏️ Modifier ce patient", key="med_modifier_dossier"):
+    if b2.button("✏️ Modifier ce participant", key="med_modifier_dossier"):
         _ouvrir_modification(numero)
     nom = f"{l['prenom']} {l['nom']}".strip() or "Identité non renseignée"
     st.markdown(f'<div class="dossier"><b>{numero}</b> &nbsp; {_badge_groupe(l["groupe"])}<br><span>{escape(nom)} · né(e) le '
@@ -386,7 +386,7 @@ def _dossier(modules, numero):
                 f'{" · dernière activité le " + _date_fr(l["derniere_activite"][:10]) if l["derniere_activite"] else ""}</span></div>',
                 unsafe_allow_html=True)
     if not l["passages"]:
-        st.info("Ce patient n’a pas encore répondu au questionnaire.")
+        st.info("Ce participant n’a pas encore répondu au questionnaire.")
         return
     dates = db.dates_passages().get(numero, {})
     passage = l["passages"][-1]
@@ -432,7 +432,7 @@ def _dossier(modules, numero):
         st.dataframe(pd.DataFrame(lignes).fillna("—"), hide_index=True)
 
 
-# ------------------------------------------------------------------ modifier un patient
+# ------------------------------------------------------------------ modifier un participant
 CATEGORIES = {
     "Effet indésirable": ("#dc2626", ["Fatigue / somnolence", "Céphalées", "Troubles du sommeil", "Nausées / troubles digestifs",
                                       "Vertiges / malaise", "Anxiété / humeur dépressive", "Troubles de l’attention ou de la mémoire",
@@ -440,7 +440,7 @@ CATEGORIES = {
     "Remarque liée à l’essai": ("#4f46e5", ["Écart au protocole", "Information transmise au promoteur", "Participation suspendue temporairement",
                                            "Retrait de consentement évoqué", "Perdu de vue / injoignable", "Changement de coordonnées",
                                            "Changement de traitement"]),
-    "Plainte du patient": ("#d97706", ["Difficulté d’utilisation du site", "Questionnaire trop long", "Questions mal comprises",
+    "Plainte du participant": ("#d97706", ["Difficulté d’utilisation du site", "Questionnaire trop long", "Questions mal comprises",
                                        "Gêne face à certaines questions", "Problème de connexion ou d’identifiants",
                                        "Souhait d’arrêter de participer", "Inquiétude sur la confidentialité des données"]),
     "Condition de complétion du questionnaire": ("#0d9488", ["Complété sans aide", "Complété avec l’aide d’un proche",
@@ -454,8 +454,8 @@ CATEGORIES = {
 GRAVITES = ["Légère", "Modérée", "Sévère"]
 EVOLUTIONS = ["En cours", "Résolu", "Résolu avec séquelles", "Inconnue"]
 MOTIFS = ["Retrait de consentement avec demande d’effacement des données", "Demande d’exercice du droit à l’effacement (RGPD)",
-          "Patient inclus par erreur", "Doublon (patient déjà inclus sous un autre numéro)",
-          "Patient non éligible (critère de non-inclusion découvert après l’inclusion)",
+          "Participant inclus par erreur", "Doublon (participant déjà inclus sous un autre numéro)",
+          "Participant non éligible (critère de non-inclusion découvert après l’inclusion)",
           "Données de test ou compte de démonstration", "Autre (à préciser)"]
 MOTIF_AUTRE = MOTIFS[-1]
 CHOISIR = "— Choisir un motif —"
@@ -489,10 +489,10 @@ def _cb_suivi(numero, slug):
     ss["med_flash"] = ("ok", f"Information enregistrée dans le suivi de {numero}.")
 
 
-@st.dialog("Supprimer définitivement ce patient ?")
+@st.dialog("Supprimer définitivement ce participant ?")
 def dialogue_suppression(numero):
     if st.session_state.get("sup_fait"):
-        st.success(f"Le patient {numero} a été supprimé.")
+        st.success(f"Le participant {numero} a été supprimé.")
         if st.button("Retour au tableau de bord", type="primary", key="sup_fin"):
             for k in ("sup_fait", "sup_motif", "sup_prec", "sup_ok", "mod_patient"):
                 st.session_state.pop(k, None)
@@ -500,7 +500,7 @@ def dialogue_suppression(numero):
             st.rerun()
         return
     st.markdown(
-        f'<div class="danger"><b>⚠️ Cette action est irréversible.</b><br>Toutes les données du patient <b>{numero}</b> '
+        f'<div class="danger"><b>⚠️ Cette action est irréversible.</b><br>Toutes les données du participant <b>{numero}</b> '
         'sont effacées de la base de données actuelle : identité, réponses aux questionnaires et suivi. '
         'Elles n’apparaîtront donc <b>plus dans les prochains exports</b>, qu’ils soient manuels ou automatiques '
         '(prévu chaque soir à 22 h).<br><br>Seule une trace minimale reste dans le journal d’audit : numéro, date, motif et '
@@ -508,13 +508,13 @@ def dialogue_suppression(numero):
     motif = st.selectbox("Motif de la suppression (obligatoire)", [CHOISIR] + MOTIFS, key="sup_motif")
     precision = st.text_area("Précisions" + (" (obligatoire)" if motif == MOTIF_AUTRE else " (facultatif)"), key="sup_prec",
                              help="Ne saisissez ni nom ni information de santé.")
-    compris = st.checkbox("J’ai compris que cette suppression est définitive et irréversible : les données de ce patient "
+    compris = st.checkbox("J’ai compris que cette suppression est définitive et irréversible : les données de ce participant "
                           "seront effacées et ne pourront pas être récupérées.", key="sup_ok")
     pret = motif != CHOISIR and compris and (motif != MOTIF_AUTRE or bool(precision.strip()))
     if st.button("Supprimer définitivement", disabled=not pret, key="sup_go"):
         db.supprimer_patient(numero, motif, precision, _utilisateur())
         for k in [k for k in st.session_state if k.startswith("rapport_")] + ["exp_fichier"]:
-            st.session_state.pop(k, None)  # aucun fichier déjà préparé ne doit contenir ce patient
+            st.session_state.pop(k, None)  # aucun fichier déjà préparé ne doit contenir ce participant
         st.session_state["sup_fait"] = True
         st.rerun(scope="fragment")
 
@@ -537,22 +537,22 @@ def _modifier():
     if b1.button("← Retour au tableau de bord", key="mod_retour"):
         st.session_state["med_vue"] = None
         st.rerun()
-    st.markdown('<div class="med-titre">Modifier un patient</div>', unsafe_allow_html=True)
-    patients = db.lister_patients()
-    if not patients:
-        st.info("Aucun patient à modifier.")
+    st.markdown('<div class="med-titre">Modifier un participant</div>', unsafe_allow_html=True)
+    participants = db.lister_patients()
+    if not participants:
+        st.info("Aucun participant à modifier.")
         return
-    par_num = {p["numero"]: p for p in patients}
+    par_num = {p["numero"]: p for p in participants}
     libelle = lambda n: f"{n} · {(par_num[n]['prenom'] + ' ' + par_num[n]['nom']).strip() or 'identité non renseignée'} · {par_num[n]['groupe']}"
     if st.session_state.get("mod_patient") not in par_num:
         st.session_state.pop("mod_patient", None)
-    numero = st.selectbox("Patient (tapez un numéro ou un nom pour chercher)", list(par_num), key="mod_patient", format_func=libelle)
+    numero = st.selectbox("Participant (tapez un numéro ou un nom pour chercher)", list(par_num), key="mod_patient", format_func=libelle)
     p = par_num[numero]
     st.markdown(f'<div class="dossier"><b>{numero}</b> &nbsp; {_badge_groupe(p["groupe"])}<br><span>'
                 f'{escape((p["prenom"] + " " + p["nom"]).strip() or "Identité non renseignée")} · né(e) le '
                 f'{_date_fr(p["naissance"], True)}</span></div>', unsafe_allow_html=True)
     _flash()
-    t1, t2, t3 = st.tabs(["✏️ Informations de base", "📝 Suivi et remarques", "🗑️ Supprimer le patient"])
+    t1, t2, t3 = st.tabs(["✏️ Informations de base", "📝 Suivi et remarques", "🗑️ Supprimer le participant"])
 
     with t1:
         st.markdown('<p class="note">Modifiez le nom, le prénom ou la date de naissance. Les changements sont enregistrés dans le journal d’audit.</p>',
@@ -568,11 +568,11 @@ def _modifier():
             noms = {"nom": "nom", "prenom": "prénom", "naissance": "date de naissance"}
             msg = "Modifié : " + ", ".join(noms[k] for k in ch) + "."
             if "naissance" in ch:
-                msg += " Le patient doit désormais se connecter avec sa nouvelle date de naissance."
+                msg += " Le participant doit désormais se connecter avec sa nouvelle date de naissance."
             st.session_state["med_flash"] = ("ok", msg)
             st.rerun()
         if db.tentatives_connexion().get(numero, 0) >= db.MAX_TENTATIVES:
-            st.warning("Le compte de ce patient est bloqué (trop d’échecs de connexion).")
+            st.warning("Le compte de ce participant est bloqué (trop d’échecs de connexion).")
             if st.button("🔓 Débloquer le compte", key="mod_debloquer"):
                 db.debloquer_compte(numero, _utilisateur())
                 st.session_state["med_flash"] = ("ok", "Compte débloqué.")
@@ -600,9 +600,9 @@ def _modifier():
         st.markdown('<div class="section" style="font-size:1.05rem;margin-top:1.4rem">Historique du suivi</div>', unsafe_allow_html=True)
         entrees = db.lister_suivi(numero)
         if not entrees:
-            _vide("Aucune information de suivi enregistrée pour ce patient.")
+            _vide("Aucune information de suivi enregistrée pour ce participant.")
         for e in entrees:
-            coul = CATEGORIES.get(e["categorie"], ("#64748b", []))[0]
+            coul = CATEGORIES.get(e["categorie"].replace("patient", "participant"), ("#64748b", []))[0]
             extra = ""
             if e["categorie"] == "Effet indésirable":
                 extra = f' · {escape(e["gravite"] or "")} · {escape(e["evolution"] or "")}' + (" · <span style='color:#b91c1c'>GRAVE</span>" if e["grave"] else "")
@@ -611,17 +611,17 @@ def _modifier():
                         f'<span style="font-weight:500;color:#64748b;font-size:.85rem">{_date_fr(e["date_evenement"])}</span></div>'
                         f'{puces}<div class="com">{escape(e["commentaire"])}</div>'
                         f'<div class="pied">Saisi le {_date_fr(e["cree_le"][:10])} par {escape(e["cree_par"] or "")}</div></div>', unsafe_allow_html=True)
-        with st.expander("🕘 Journal des modifications de ce patient"):
+        with st.expander("🕘 Journal des modifications de ce participant"):
             journal = db.lire_journal(numero)
             if journal:
                 st.dataframe(pd.DataFrame([{"Date et heure": e["date_heure"].replace("T", " "), "Utilisateur": e["utilisateur"],
                                             "Action": e["action"], "Détails": _txt_journal(e)} for e in journal]), hide_index=True)
 
     with t3:
-        st.markdown('<div class="danger">La suppression efface définitivement l’identité, les réponses et le suivi de ce patient. '
+        st.markdown('<div class="danger">La suppression efface définitivement l’identité, les réponses et le suivi de ce participant. '
                     'Elle nécessite un motif et une confirmation.</div>', unsafe_allow_html=True)
         st.markdown("<div style='height:.6rem'></div>", unsafe_allow_html=True)
-        if st.button("🗑️ Supprimer ce patient…", key="mod_suppr_btn"):
+        if st.button("🗑️ Supprimer ce participant…", key="mod_suppr_btn"):
             for k in ("sup_fait", "sup_motif", "sup_prec", "sup_ok"):
                 st.session_state.pop(k, None)
             dialogue_suppression(numero)

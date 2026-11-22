@@ -11,13 +11,15 @@ from functools import lru_cache
 
 import streamlit as st
 
+import legal
+
 DOSSIER = os.path.dirname(os.path.abspath(__file__))
 
 # ============================ À MODIFIER ============================
 ETABLISSEMENT = "CHU Grenoble Alpes"
 TITRE = ("PROFIL", "SANTE")   # le 2e mot s'affiche en couleur
 SURTITRE = "Questionnaires"
-SOUS_TITRE = "Vous êtes invité(e) à répondre à des questionnaires sur votre mode de vie. Ces informations seront transmises à votre médecin neurologue."
+SOUS_TITRE = "Vous êtes invité(e) à répondre à des questionnaires sur votre mode de vie. Ces informations seront transmises à l’investigateur de l’étude."
 PIED_DE_PAGE = "Centre Hospitalier Universitaire Grenoble Alpes · Vos données sont confidentielles et protégées."
 AFFICHER_ETAPES = True            # bandeau « comment ça marche » (3 étapes)
 # ====================================================================
@@ -175,7 +177,7 @@ def entete_connexion(titre, texte):
 
 
 def afficher(aller):
-    """Page d'accueil. `aller("patient")` / `aller("medecin")` changent de page."""
+    """Page d'accueil. `aller("participant")` / `aller("medecin")` changent de page."""
     appliquer_style(accueil=True)
     st.markdown(f'<div class="topbar">{logo_html(88)}</div>', unsafe_allow_html=True)
     gauche, droite = st.columns([1.05, 1], gap="large", vertical_alignment="center")
@@ -187,10 +189,10 @@ def afficher(aller):
         c1, c2 = st.columns(2, gap="small")
         with c1:
             if st.button("Accès Participant  →", key="btn_patient"):
-                aller("patient")
+                aller("participant")
             st.markdown('<p class="micro">Je réponds aux questionnaires<br></p>', unsafe_allow_html=True)
         with c2:
-            if st.button("Accès Médecin", key="btn_medecin"):
+            if st.button("Accès Investigateur", key="btn_medecin"):
                 aller("medecin")
             st.markdown('<p class="micro">Accès réservé<br></p>', unsafe_allow_html=True)
     with droite:
@@ -203,3 +205,4 @@ def afficher(aller):
             '<div class="etape"><b>3</b><div><strong>Repassez les questionnaires</strong><span>Si vous le souhaitez, reconnectez-vous et terminez/repassez les questionnaires.</span></div></div>'
             '</div>', unsafe_allow_html=True)
     st.markdown(f'<div class="pied">{PIED_DE_PAGE}</div>', unsafe_allow_html=True)
+    legal.pied_liens()
