@@ -189,7 +189,6 @@ if "pid" not in st.session_state:
     with centre:
         st.markdown(accueil.entete_connexion(
             "Accès participant", "Connectez-vous avec votre numéro de randomisation et votre date de naissance."),
-            "Accès participant", "Connectez-vous avec votre numéro de randomisation et votre date de naissance."),
             unsafe_allow_html=True)
         with st.form("login"):
             numero = st.text_input("Numéro de randomisation")
