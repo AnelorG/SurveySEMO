@@ -1,5 +1,2 @@
-git rm -r --cached __pycache__
-git add .gitignore
-git commit -m "Ajout de .gitignore et retrait des fichiers pycache"
-git pull origin main
-git push origin main
+__pycache__/
+*.pyc
