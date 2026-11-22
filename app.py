@@ -274,11 +274,8 @@ if suivant:
     manquantes = [q["texte"] for q in m["questions"]
                   if est_visible(q, saisies) and est_manquante(q, saisies[q["id"]])]
     conflits = [q for q in m["questions"] if q["type"] == "choix_multiple" and q.get("exclusives") and est_visible(q, saisies)
-    conflits = [q for q in m["questions"] if q["type"] == "choix_multiple" and q.get("exclusives") and est_visible(q, saisies)
                 and len(saisies[q["id"]] or []) > 1 and any(x in q["exclusives"] for x in saisies[q["id"]])]
     if conflits and not manquantes:
-        q0 = conflits[0]
-        st.error(f"Question « {q0['texte'][:90]} » : « " + " » ou « ".join(q0["exclusives"])
         q0 = conflits[0]
         st.error(f"Question « {q0['texte'][:90]} » : « " + " » ou « ".join(q0["exclusives"])
                  + " » doit être choisi seul (sans autre réponse).")
