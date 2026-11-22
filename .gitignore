@@ -1,2 +1,7 @@
 __pycache__/
 *.pyc
+*.db
+sauvegarde_*
+attribution_*.csv
+liste*.csv
+Export_*.xlsx
