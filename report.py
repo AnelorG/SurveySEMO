@@ -534,19 +534,21 @@ def rapport_sante(r, Q, age, m):
 
 
 def rapport_reserve_cognitive(r, Q, age, m):
-    """Module 5 – Réserve cognitive (QEV/LEQ) : sous-scores généraux par période (descriptif, aucun seuil de référence établi)."""
+    """Module 5 – Réserve cognitive (QEV/LEQ) : sous-scores non spécifiques par période (descriptif). Le score total LEQ n'est pas calculé (barème des scores spécifiques à confirmer)."""
     forts, pistes, cartes = [], [], []
     v = cotations.calculer(m, r, age)
     st.subheader("🧠 Votre réserve cognitive")
     explication("Le questionnaire <b>QEV / LEQ</b> recense les activités intellectuelles, sociales et de loisirs de votre vie : visites, musique, loisirs artistiques, "
                 "activité physique, lecture, deuxième langue et voyages. Chacun des 7 domaines est noté de 0 à 5 pour chaque période de vie, soit un <b>maximum de 35 par période</b>. "
-                "Un score plus élevé correspond à davantage d’activités mentales variées. Il n’existe <b>pas de seuil de référence</b> : ces chiffres décrivent votre parcours, ils ne constituent pas un diagnostic.")
+                "Un score plus élevé correspond à davantage d’activités mentales variées. Il n’existe <b>pas de seuil de référence</b> : ces chiffres décrivent votre parcours, ils ne constituent pas un diagnostic. "
+                "Ils correspondent à la partie « activités de loisirs » du questionnaire (scores <i>non spécifiques</i>) : le score total du LEQ, qui intègre aussi vos études, votre profession et votre vie sociale, "
+                "n’est pas encore calculé.")
     periodes = [(p, lbl) for p, lbl in cotations.LEQ_PERIODES if v[f"leq_{p}_general"] is not None]
     if not periodes:
         st.caption("Aucun sous-score n’a pu être calculé à partir de vos réponses.")
         return dict(cartes=cartes, forts=forts, pistes=pistes)
     couleurs = {"ja": C["sky"], "ad": C["indigo"], "se": C["violet"]}
-    rangee([carte(f"Activités générales · {lbl}", f"{v[f'leq_{p}_general']} / 35", f"{fmt(v[f'leq_{p}_general_pct'])} % du maximum", couleurs[p], "🧠")
+    rangee([carte(f"Activités de loisirs · {lbl}", f"{v[f'leq_{p}_general']} / 35", f"{fmt(v[f'leq_{p}_general_pct'])} % du maximum", couleurs[p], "🧠")
             for p, lbl in periodes])
     noms = [n.capitalize() for _, n in cotations.LEQ_DOMAINES]
     fig = go.Figure()
@@ -557,11 +559,11 @@ def rapport_reserve_cognitive(r, Q, age, m):
                       yaxis=dict(range=[0, 5.6], dtick=1), legend=dict(orientation="h", y=-0.25))
     st.plotly_chart(style(fig, 360))
     if v["leq_general_somme"] is not None:
-        rangee([carte("Somme des trois périodes", f"{v['leq_general_somme']} / 105", f"{fmt(v['leq_general_somme_pct'])} % du maximum", C["teal"], "➕")])
+        rangee([carte("Activités de loisirs · 3 périodes", f"{v['leq_general_somme']} / 105", f"{fmt(v['leq_general_somme_pct'])} % du maximum", C["teal"], "➕")])
     st.caption("Les autres informations du questionnaire (études, professions, vie associative, formations…) sont conservées pour l’étude : "
-               "leur cotation est en cours de définition et n’apparaît pas encore dans cette synthèse.")
+               "leur cotation (scores spécifiques et score total LEQ) est en cours de validation et n’apparaît pas encore dans cette synthèse.")
     cartes.append(carte("Réserve cognitive (LEQ)", f"{v['leq_general_somme']} / 105" if v["leq_general_somme"] is not None else f"{len(periodes)} période(s)",
-                        "activités générales · descriptif", C["violet"], "🧠"))
+                        "activités de loisirs · descriptif", C["violet"], "🧠"))
     return dict(cartes=cartes, forts=forts, pistes=pistes)
 
 

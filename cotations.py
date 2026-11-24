@@ -5,6 +5,9 @@ Les seuils sont regroupés en tête de chaque bloc pour être modifiés facileme
 Utilisation : cotations.calculer("mode_de_vie", reponses, age) -> {cle: valeur}  (None si non calculable)
 """
 
+import re
+
+
 # ---------------------------------------------------------------- outils
 def _n(rep, k):
     v = rep.get(k)
@@ -331,16 +334,30 @@ def _variables_sante():
         ("thm_age_debut", "Traitement hormonal de la ménopause – âge au début (ans)"), ("thm_duree_mois", "Traitement hormonal de la ménopause – durée (mois)")]
 
 
-# ---------------------------------------------------------------- MODULE 5 : réserve cognitive (QEV / LEQ), sous-score GÉNÉRAL par période
-# Cotation proposée dans le document de validation (12/11/2026) : 7 domaines cotés de 0 à 5 par période, soit 35 au maximum.
-#  G1, G2, G3, G5, G6 : Jamais 0 · Moins d'une fois par mois 1 · Chaque mois 2 · Tous les 15 jours 3 · Chaque semaine 4 · Chaque jour 5.
-#  G4 (activité physique) : valeur MAXIMALE des trois intensités (un seul domaine). Si une intensité manque, le maximum n'est déterminable
-#     que lorsqu'une autre intensité est déjà cotée à 5.
-#  G7 (voyages) : 1 point par zone cochée, plafonné à 5 ; « Aucun » = 0 ; « Aucun » coché avec une zone = réponse à clarifier (manquant).
-#  G8 (autres loisirs) : descriptif, sans points. Une réponse vide reste manquante ; si un domaine ne peut pas être coté, le sous-score est manquant.
-# Les scores SPÉCIFIQUES (études, professions, encadrement, activités sociales...) et le score total LEQ ne sont PAS calculés : le barème de la
-# version française 2011 est « à confirmer » dans le document de validation.
+# ---------------------------------------------------------------- MODULE 5 : réserve cognitive (QEV / LEQ)
+# Structure (Valenzuela & Sachdev, 2007 ; version française C. Berr & D. Villebrun ; harmonisation Ourry et al., 2021) : 3 périodes de vie
+# (13-30 ans, 30-65 ans, depuis 65 ans) ; chaque période = sous-score NON SPÉCIFIQUE + sous-score SPÉCIFIQUE ; score total LEQ = somme des 3 périodes.
+#
+# CALCULÉ ICI (barème publié, sans ambiguïté) :
+#  - sous-score NON SPÉCIFIQUE de chaque période : 7 domaines cotés de 0 à 5, soit 35 au maximum.
+#      G1, G2, G3, G5, G6 : Jamais 0 · Moins d'une fois par mois 1 · Chaque mois 2 · Tous les 15 jours 3 · Chaque semaine 4 · Chaque jour 5.
+#      G4 (activité physique) : valeur MAXIMALE des trois intensités. Si une intensité manque, le maximum n'est déterminable que lorsqu'une
+#         autre intensité est déjà cotée à 5.
+#      G7 (voyages) : points selon le nombre de zones cochées (table LEQ_POINTS_VOYAGES) ; « Aucun » = 0 ; « Aucun » avec une zone = à clarifier (manquant).
+#      G8 (autres loisirs) : descriptif, sans points. Réponse vide = manquante ; domaine non cotable = sous-score manquant.
+#  - composante « responsabilité d'encadrement » de la période 30-65 ans : 0 personne 8 · 1-5 personnes 16 · 6-10 personnes 24 · plus de 10 personnes 32
+#      (valeur la plus élevée sur les tranches d'âge ; absence d'encadrement = 8). Composante intermédiaire, NON normalisée.
+#
+# NON CALCULÉ (barème absent des sources publiques ; annexe de Valenzuela & Sachdev 2007 et tableaux supplémentaires S1-S2 d'Ourry et al. 2021 à obtenir) :
+#  - sous-scores SPÉCIFIQUES (éducation ; profession inversée + encadrement + formation supplémentaire ; vie sociale et recherche d'information après 65 ans),
+#    leur normalisation (même poids que les sous-scores non spécifiques) et donc le SCORE TOTAL LEQ. Ces valeurs restent vides dans l'export.
+#    Règle française déjà connue pour l'éducation : 2 ans de secondaire = +0 ; 3 ans = +4 ; 2 dernières années = +8.
 LEQ_PERIODES = [("ja", "13 à 30 ans"), ("ad", "30 à 65 ans"), ("se", "depuis 65 ans")]
+# Voyages (G7) : nombre de zones cochées (0 à 8) -> points. Règle retenue dans le document de validation : 1 point par zone, plafonné à 5.
+# Variante décrite dans la littérature (Chan et al., 2022) : 1-2 zones = 1 ; 3-4 = 2 ; 5 = 3 ; 6-7 = 4 ; toutes = 5
+# -> pour l'utiliser, remplacer la table ci-dessous par {0: 0, 1: 1, 2: 1, 3: 2, 4: 2, 5: 3, 6: 4, 7: 4, 8: 5}.
+LEQ_POINTS_VOYAGES = {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 5, 7: 5, 8: 5}
+LEQ_ENCADREMENT = {"Aucune personne encadrée / sans objet": 8, "1–5 personnes": 16, "6–10 personnes": 24, "Plus de 10 personnes": 32}
 LEQ_DOMAINES = [("g1_famille", "visites"), ("g2_musique", "musique"), ("g3_art", "loisirs artistiques"), ("g4", "activité physique"),
                 ("g5_lecture", "lecture"), ("g6_langue", "deuxième langue"), ("g7_voyages", "voyages")]
 
@@ -359,7 +376,22 @@ def _leq_g7(rep, p):
     zones = [x for x in v if x != "Aucun"]
     if "Aucun" in v and zones:
         return None                                   # incohérent : à clarifier avec le participant
-    return min(len(zones), 5)
+    return LEQ_POINTS_VOYAGES[min(len(zones), 8)]
+
+
+def _leq_encadrement(rep):
+    """Responsabilité d'encadrement 30-65 ans : 8 / 16 / 24 / 32 (plus forte valeur des tranches d'âge) ; None si non concerné ou non renseigné."""
+    age = rep.get("_age")
+    if age is not None and age < 30:
+        return None
+    enc = rep.get("ad_s2_encadrement")
+    if enc == "Non":
+        return LEQ_ENCADREMENT["Aucune personne encadrée / sans objet"]
+    if enc != "Oui":
+        return None
+    vals = [LEQ_ENCADREMENT.get(v) for k, v in rep.items() if re.fullmatch(r"ad_s2_\d+_\d+_effectif", k)]
+    vals = [v for v in vals if v is not None]
+    return max(vals) if vals else None
 
 
 def reserve_cognitive(module, rep):
@@ -373,6 +405,7 @@ def reserve_cognitive(module, rep):
         out[f"leq_{p}_general"] = total
         out[f"leq_{p}_general_pct"] = None if total is None else _r(total / 35 * 100, 0)
         generaux.append(total)
+    out["leq_ad_encadrement"] = _leq_encadrement(rep)
     out["leq_general_somme"] = None if None in generaux else sum(generaux)          # sur 105, si les trois périodes sont disponibles
     out["leq_general_somme_pct"] = None if out["leq_general_somme"] is None else _r(out["leq_general_somme"] / 105 * 100, 0)
     return out
@@ -383,10 +416,11 @@ def _variables_leq():
     for p, lbl in LEQ_PERIODES:
         for (cle, nom), _ in zip(LEQ_DOMAINES, range(7)):
             v.append((f"leq_{p}_{cle.split('_')[0]}", f"LEQ {lbl} – {cle.split('_')[0].upper()} {nom} (0-5)"))
-        v += [(f"leq_{p}_general", f"LEQ – sous-score général {lbl} (0-35 ; vide si un domaine manque ou si la période ne concerne pas le participant)"),
-              (f"leq_{p}_general_pct", f"LEQ – sous-score général {lbl} en % du maximum (score ÷ 35 × 100)")]
-    return v + [("leq_general_somme", "LEQ – somme des trois sous-scores généraux (0-105 ; vide si une période manque)"),
-                ("leq_general_somme_pct", "LEQ – somme des sous-scores généraux en % du maximum (somme ÷ 105 × 100)")]
+        v += [(f"leq_{p}_general", f"LEQ – sous-score NON SPÉCIFIQUE {lbl} (0-35 ; vide si un domaine manque ou si la période ne concerne pas le participant)"),
+              (f"leq_{p}_general_pct", f"LEQ – sous-score non spécifique {lbl} en % du maximum (score ÷ 35 × 100)")]
+    return v + [("leq_ad_encadrement", "LEQ 30 à 65 ans – responsabilité d'encadrement : composante intermédiaire du score spécifique, non normalisée (8 = aucune personne encadrée ; 16 = 1-5 ; 24 = 6-10 ; 32 = plus de 10)"),
+                ("leq_general_somme", "LEQ – somme des trois sous-scores NON SPÉCIFIQUES (0-105 ; vide si une période manque). Ce n'est PAS le score total LEQ (scores spécifiques non calculés)"),
+                ("leq_general_somme_pct", "LEQ – somme des sous-scores non spécifiques en % du maximum (somme ÷ 105 × 100)")]
 
 
 # ---------------------------------------------------------------- variables (ordre et libellés pour l'export)
@@ -485,5 +519,5 @@ def resume(valeurs):
     if valeurs.get("had_d_total") is not None:
         morceaux.append(f"HAD-D {valeurs['had_d_total']}/21")
     if valeurs.get("leq_general_somme") is not None:
-        morceaux.append(f"LEQ général {valeurs['leq_general_somme']}/105")
+        morceaux.append(f"LEQ non spécifique {valeurs['leq_general_somme']}/105")
     return " · ".join(morceaux) or None
