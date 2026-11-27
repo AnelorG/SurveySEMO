@@ -1,7 +1,10 @@
 __pycache__/
 *.pyc
-# *.db
-# sauvegarde_*
-# attribution_*.csv
-# liste*.csv
-# Export_*.xlsx
+*.db
+sauvegarde_*
+attribution_*.csv
+liste*.csv
+Export_*.xlsx
+export_reponses.csv
+.streamlit/secrets.toml
+.env

@@ -1,8 +1,9 @@
 """
 admin.py : espace investigateur (connexion, tableau de bord, dossier participant, ajout de participant).
-Identifiants provisoires : voir ADMIN_LOGIN / ADMIN_MOT_DE_PASSE dans config.py.
+Identifiants : lus dans les secrets / variables d'environnement (voir config.py).
 """
 import hmac
+import time
 from datetime import date, datetime
 from html import escape
 
@@ -108,18 +109,21 @@ def _connexion(aller):
     with centre:
         st.markdown(accueil.entete_connexion("Espace investigateur", "Connectez-vous pour accéder au tableau de bord."),
                     unsafe_allow_html=True)
-        with st.form("login_medecin"):
-            identifiant = st.text_input("Identifiant")
-            mdp = st.text_input("Mot de passe", type="password")
-            ok = st.form_submit_button("Se connecter")
-        if ok:
-            bon_id = hmac.compare_digest(identifiant.strip().encode(), getattr(config, "ADMIN_LOGIN", "cercog").encode())
-            bon_mdp = hmac.compare_digest(mdp.encode(), getattr(config, "ADMIN_MOT_DE_PASSE", "cercog").encode())
-            if bon_id and bon_mdp:
-                st.session_state["medecin"] = True
-                st.session_state["med_utilisateur"] = identifiant.strip()
-                st.rerun()
-            st.error("Identifiant ou mot de passe incorrect.")
+        if not config.acces_investigateur_configure():
+            st.error("L’accès investigateur n’est pas configuré sur ce serveur (identifiant et mot de passe absents). "
+                     "Voir le guide technique : section « Sécuriser l’accès investigateur ».")
+        else:
+            with st.form("login_medecin"):
+                identifiant = st.text_input("Identifiant")
+                mdp = st.text_input("Mot de passe", type="password")
+                ok = st.form_submit_button("Se connecter")
+            if ok:
+                if config.verifier_investigateur(identifiant, mdp):
+                    st.session_state["medecin"] = True
+                    st.session_state["med_utilisateur"] = identifiant.strip()
+                    st.rerun()
+                time.sleep(1.5)   # ralentit les tentatives répétées
+                st.error("Identifiant ou mot de passe incorrect.")
         if st.button("← Retour à l’accueil", key="retour_admin"):
             aller("accueil")
 
